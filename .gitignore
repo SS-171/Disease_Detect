@@ -1,3 +1,5 @@
 __pycache__
 myEnv
 resource
+# use: git rm -r --cached . to reset folder if any additional ignore
+model1.h5
