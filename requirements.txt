@@ -1,0 +1,32 @@
+uvicorn[standard]
+# python 3.6.2 
+fastapi
+pydantic
+tensorflow == 1.15
+numpy
+# for template
+jinja2
+# for static files
+aiofiles
+
+# mask rcnn 
+scipy
+Pillow
+cython
+matplotlib
+scikit-image
+keras==2.0.8
+opencv-python
+h5py==2.10.0
+imgaug
+IPython[all]
+tensorflow-hub
+python-multipart
+xgboost
+
+# for database
+sqlalchemy
+pymongo
+
+# for saving img to mongo
+pydrive
