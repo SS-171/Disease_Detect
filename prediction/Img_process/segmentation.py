@@ -4,7 +4,7 @@ import cv2 as cv
 import numpy as np
 import os 
 from datetime import datetime
-from ..database.ImgHandle import collection, toPIL
+from ..database.config.db import PlantCollection
 from ..database.models.plant import Plant
 from ..database.APIDrive.drive import saveToDrive
 from PIL import Image
@@ -28,6 +28,8 @@ def predict_segment(image):
     r = model.detect([image])[0]
     object_count = len(r["class_ids"])
     # try:
+    srcID = ('%06x' % random.randrange(16**6)).upper()
+
     contour_count = 0
     cnt_area = np.array([])
     result ={}
@@ -47,7 +49,7 @@ def predict_segment(image):
                 mask = cv.drawContours(blank.copy(), [cnt],0, (255,255,255), -1)
                 new_img =cv.bitwise_and(image, mask)
                 crop_img = center_crop(new_img, dim_object)
-                cv_img = cv.resize(crop_img, (150, 150))
+                cv_img = cv.cvtColor(cv.resize(crop_img, (150, 150)), cv.COLOR_BGR2RGB)
                 # SAVE TO DRIVE
                 # img_number = random.randint(0, 200)
                 # cv.imwrite(f'prediction\Img_process\\resource\seg_img\img_{img_number}.jpg', cv_img)
@@ -60,20 +62,25 @@ def predict_segment(image):
                 pred_result = predict(features)
                 # SAVE TO DRIVE
                 img_name = ('%06x' % random.randrange(16**6)).upper()
-                # img = Image.fromarray(cv_img.astype('uint8'), 'RGB')
-                img_url = saveToDrive(toPIL(cv_img), img_name )
+                img_path = f'prediction\Img_process\\resource\seg_img\img_{img_name}.jpg'
+                cv.imwrite(img_path, cv_img)
+                img_url = saveToDrive(img_path, img_name)
+                os.remove(img_path)
                 # SAVE TO MONGODB
                 plant = Plant(
-                    image = img_url,
+                    image_url = img_url,
                     status = str(pred_result),
+                    srcID = srcID,
                     created_at = datetime.now())
                     
-                collection.insert_one(dict(plant))
+                PlantCollection.insert_one(dict(plant))
                 # 
                 result[f'leaf{contour_count}'] = pred_result
 
     if(not contour_count): return 'Not found any leaf in the image case1'
-    else: return result
+    else: 
+        result['srcID'] = srcID
+        return result
         
     # except:
     #     return 'Not found any leaf in the image case2'

@@ -16,11 +16,14 @@
     </form>
     <p> Predicted Disease:</p>
     <ul class='predict-result'></ul>
+    <div class="pred-img"></div>
     <form action="">
         <input type="text" autocomplete="off" id="messageText">
         <input type="submit" onclick="sendMessage(event)">
         <ul id="messages"></ul>
     </form>
+    <h4>TEMPERATURE AND HUMIDITY UPDATE TEST</h4>
+
 </div>
 {% endblock %}
 
@@ -32,12 +35,14 @@
     const inputImg = $('#input_img')
     const submitBtn= $("input[type='submit']")
     const predResult = $('.predict-result')
+    const predImg = $('.pred-img')
     submitBtn.onclick = function(e){
         e.preventDefault();
         let data = new FormData()
         data.append('file', inputImg.files[0])
         // data = JSON.stringify(data)
         predResult.innerText = '...predicting'
+        let srcID ='';
         fetchImage(data).then(result => {
             predResult.innerText = ''
             if(typeof(result) ==="string"){
@@ -46,11 +51,30 @@
             else {
                 console.log(result, typeof(result))
                 Object.keys(result).forEach((each)=>{
-                    var leafElement = document.createElement('li')
-                    leafElement.innerText = `${each} status: ${result[each]}`
-                    predResult.appendChild(leafElement)
+                    if (each !== 'srcID') {
+
+                        var leafElement = document.createElement('li')
+                        leafElement.innerText = `${each} status: ${result[each]}`
+                        predResult.appendChild(leafElement)
+                    }
+                    else {
+                        srcID = result["srcID"]
+                    }
                 })
+                
             }
+        })
+        .then(()=>{
+            getImage(srcID).then(result=>{
+                console.log(typeof(result), result)
+                result.forEach(each =>{
+                let imgURL = each.image_url;
+                let imgElement = document.createElement('img');
+                imgElement.setAttribute('src', imgURL)
+                predImg.appendChild(imgElement)
+                })
+                // result.forEach(each=>console.log('each',each))
+            })
         })
     }
     async function fetchImage(data){
@@ -58,6 +82,10 @@
             method: "POST",
             body: data,
         })
+        return response.json()
+    }
+    async function getImage(srcID){
+        const response = await fetch(`/image/${srcID}`)
         return response.json()
     }
 

@@ -1,5 +1,13 @@
 __pycache__
 myEnv
 resource
-# use: git rm -r --cached . to reset folder if any additional ignore
-model1.h5
+
+# for large file storage git lfs
+# /****
+# git lfs install 
+# git lfs migrate import --include="folder"
+# git lfs track "folder"
+# git add .
+# git commit -m ""
+# git push origin master
+# */

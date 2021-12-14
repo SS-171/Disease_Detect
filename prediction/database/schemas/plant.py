@@ -1,5 +1,3 @@
-import io
-from PIL import Image
 def plantEntity(item) -> dict:
     return {
         "id" : str(item["_id"]),
