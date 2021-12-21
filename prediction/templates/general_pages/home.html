@@ -18,9 +18,9 @@
     <ul class='predict-result'></ul>
     <div class="pred-img"></div>
     <form action="">
-        <input type="text" autocomplete="off" id="messageText">
-        <input type="submit" onclick="sendMessage(event)">
-        <ul id="messages"></ul>
+        <input type="text" autocomplete="off" id="command">
+        <input type="submit" onclick="sendCommand(event)">
+        <ul id="control"></ul>
     </form>
     <h4>TEMPERATURE AND HUMIDITY UPDATE TEST</h4>
 
@@ -28,7 +28,16 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.0/socket.io.js"
+    integrity="sha512-zpwALZtEUgguEViSrR8yVZpFH0QBBtr9gJ6QUHglri7i+SyUcrr/3o9mfMI12REAGVqMmkwGzkEguFBF7LOpFw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
+    // ws initialization
+    const socket = io()
+    socket.on("connect", ()=>{
+        console.log("Websocket connected")
+    })
+    // 
     const $ =document.querySelector.bind(document)
     const $$ = document.querySelectorAll.bind(document)
     const form = $('form')
@@ -90,21 +99,23 @@
     }
 
     // for websocket interface
-    var ws = new WebSocket("ws://localhost:8000/ws");
-    ws.onmessage = function(event) {
-        var messages = document.getElementById("messages")
-        var message = document.createElement('li')
-        var content = document.createTextNode(event.data)
-        message.appendChild(content)
-        messages.appendChild(message)
-
-    }
-    function sendMessage(event){
-        var input = document.getElementById("messageText")
-        ws.send(input.value)
+    
+    function sendCommand(event){
+        var input = document.getElementById("command")
+        socket.emit("control", input.value)
         input.value = ''
         event.preventDefault()
     }
+    socket.on("envi", data =>{
+        console.log(data)
+    })
+    socket.on("control", (data)=>{
+        var ws = document.querySelector("#control")
+        var element = document.createElement("li")
+        var text = document.createTextNode(data)
+        element.appendChild(text)
+        ws.appendChild(element)
+    })
 </script>
 
 {% endblock %}

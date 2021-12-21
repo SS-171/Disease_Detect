@@ -12,6 +12,13 @@ def saveToDrive(img, name):
     print("title : %s, id: %s" % (file1['title'], file1['id']))
     img_url = f"https://drive.google.com/uc?export=view&id={file1['id']}"
     return img_url
+def deleteInDrive(id):
+    images = drive.ListFile({'q': f"'{folderID}' in parents and trashed=false"}).GetList()
+    for image in images:
+        if (image['id'] == id):
+            image.Trash()
+            break
+    
 # from pydrive.drive import GoogleDrive
 # from pydrive.auth import GoogleAuth
 # gauth = GoogleAuth()

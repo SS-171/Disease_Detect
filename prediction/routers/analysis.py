@@ -5,11 +5,12 @@ from bson import ObjectId
 from prediction.database.schemas.plant import plantEntity, plantsEntity
 from prediction.database.schemas.envi import enviEntity, envisEntity
 from prediction.database.models.envi import Envi
+from prediction.database.APIDrive.drive import deleteInDrive
 from datetime import datetime
 router = APIRouter()
 
 
-
+# FOR IMAGE
 @router.get('/image/{srcID}')
 async def image(srcID):
     return plantsEntity(PlantCollection.find({"srcID": srcID}))
@@ -21,17 +22,14 @@ async def image(id):
 @router.get('/images/all')
 async def images():
    return plantsEntity(PlantCollection.find())
-    # return pil_imgs
 
-# Post environment parameter to server and save to db
-@router.post('/environment/post')
-async def envi(envi):
-    envi = dict(Envi(
-        temp = envi.temp,
-        humid = envi.humid,
-        time = datetime.now()
-    ))
-    EnviCollection.insert_one(envi)
+@router.get('/image/delete/{imgID}')
+async def delImage(imgID):
+    url = f"https://drive.google.com/uc?export=view&id={imgID}"
+    PlantCollection.find_one_and_delete({"image_url": url})
+    deleteInDrive(imgID)
+    return {'message': 'Successfully deleted'}
+
 
 # Get envi prm from db
 @router.get('/environment/get/{time}')
