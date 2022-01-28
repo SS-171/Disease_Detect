@@ -28,7 +28,7 @@ def predict_segment(image):
     r = model.detect([image])[0]
     object_count = len(r["class_ids"])
     # try:
-    srcID = ('%06x' % random.randrange(16**6)).upper()
+    # srcID = ('%06x' % random.randrange(16**6)).upper()
 
     contour_count = 0
     cnt_area = np.array([])
@@ -61,7 +61,7 @@ def predict_segment(image):
                 # Classify
                 pred_result = predict(features)
                 # SAVE TO DRIVE
-                img_name = ('%06x' % random.randrange(16**6)).upper()
+                img_name = random.randint(0,9)
                 img_path = f'prediction\Img_process\\resource\seg_img\img_{img_name}.jpg'
                 cv.imwrite(img_path, cv_img)
                 img_url = saveToDrive(img_path, img_name)
@@ -70,16 +70,19 @@ def predict_segment(image):
                 plant = Plant(
                     image_url = img_url,
                     status = str(pred_result),
-                    srcID = srcID,
+                    # srcID = srcID,
                     created_at = datetime.now())
                     
                 PlantCollection.insert_one(dict(plant))
                 # 
-                result[f'leaf{contour_count}'] = pred_result
+                response = {
+                    "url" : img_url,
+                    "status" : pred_result
+                }
+                result[f"l{contour_count}"] = response
 
     if(not contour_count): return 'Not found any leaf in the image case1'
     else: 
-        result['srcID'] = srcID
         return result
         
     # except:

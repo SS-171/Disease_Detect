@@ -16,16 +16,11 @@ def deleteInDrive(id):
     images = drive.ListFile({'q': f"'{folderID}' in parents and trashed=false"}).GetList()
     for image in images:
         if (image['id'] == id):
-            image.Trash()
+            image.Delete()
             break
     
-# from pydrive.drive import GoogleDrive
-# from pydrive.auth import GoogleAuth
-# gauth = GoogleAuth()
-
-# drive = GoogleDrive(gauth) # Create GoogleDrive instance with authenticated GoogleAuth instance
-
-# # Auto-iterate through all files in the root folder. Replace root with folder ID that you interested in
-# file_list = drive.ListFile({'q': "'root' in parents and trashed=false"}).GetList()
-# for file1 in file_list:
-#   print('title: %s, id: %s' % (file1['title'], file1['id']))
+def deleteAllInDrive():
+    images = drive.ListFile({'q': f"'{folderID}' in parents and trashed=false"}).GetList()
+    for image in images:
+        image.Delete()
+    

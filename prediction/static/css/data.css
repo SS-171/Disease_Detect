@@ -1,0 +1,177 @@
+/* Chart */
+#data{
+    position: relative;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 2rem;
+}
+
+/* data menu */
+.data-menu{
+    position: fixed;
+    display: inline-block;
+    top: 30px;
+    text-align: left;
+    font-size: 3.4rem;
+    color: #166447;
+    z-index: 2;
+}
+.data-menu__icon:hover{
+    cursor: pointer;
+    filter: brightness(1.2)
+}
+.data-menu__list{
+    background-color: rgba(122, 187, 133, 0.6);
+    border-radius: 5px;
+    overflow: hidden;
+    animation: fadeIn .5s linear;
+    display: none;
+    box-shadow: 2px 4px 4px #ccc;
+
+}
+.data-menu__item a{
+    display: block;
+    color : #000;
+    font-size: 1.4rem;
+    padding: 1.5rem;
+}
+.data-menu__item a:hover{
+    background-color: rgba(122, 187, 133, 1)
+}
+
+.data-menu--show{
+    display: block;
+}
+/*  */
+.data-item.temperature{
+    grid-row: 1;
+}
+.data-item.humidity{
+    grid-row: 2;
+}
+.data-item.image{
+    grid-row: 3;
+}
+.data-item{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.chart{
+    min-height: 350px;
+    width: 80%;
+    margin-top: 20px;
+    color: #000;
+    display: flex;
+    justify-content: center;
+    background-color:#fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+.date-container{
+    display: flex;
+    font-size: 1.4rem;
+    justify-content: center;
+    margin: 2rem 0;
+}
+.date__time{
+    display: flex;
+    align-items: center;
+    color:rgb(9, 46, 23);
+    font-weight: 600;
+    margin: 0 40px;
+}
+.date-container button{
+    font-size: 1.4rem;
+    background-color: rgb(51, 145, 87);
+    outline: none;
+    border: 1px solid #ccc;
+    padding: 5px 5px;
+    border-radius: 4px;
+    color: #fff;
+    margin-left: 10px;
+}
+.date-container button:hover{
+    filter: brightness(1.2)
+}
+.date__time input{
+    margin: 0 10px;
+}
+.date__time input:hover{
+    cursor: pointer;
+}
+.data__label{
+    display: block;
+    font-size: 1.8rem;
+    padding: 20px;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    color: #091758;
+}
+.data-item{
+    position: relative;
+    text-align: center;
+}
+
+.img-table{
+    grid-row: 3;
+    padding: 20px;
+    border-collapse: collapse;
+    width: 80%;
+    background-color: #ccc;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    overflow: hidden;
+}
+.img-table td, .img-table th{
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+.img-table td a, .img-show{
+    color:#000;
+    text-decoration: underline;
+}
+.img-table td a:hover, .img-show:hover{
+    cursor: pointer;
+    color:#0c2cb9;
+}
+.img-table th{
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align : center;
+    background-color: #5ab392;
+    color: white;
+}
+.img-table tr:hover{
+    background-color: #ddd;
+}
+.img-table tr:nth-child(even){background-color: #f2f2f2;}
+
+
+
+/* overlay image */
+.overlay{
+    position: fixed;
+    width: 80%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.3);
+    left: 20%;
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+}
+.overlay__img{
+    transform: scale(1.2);
+    transition: transform .5s ease;
+}
+.overlay__img:hover{
+    cursor: pointer;
+    -ms-transform: scale(1.6); /* IE 9 */
+    -webkit-transform: scale(1.6); /* Safari 3-8 */
+    transform: scale(1.6); 
+}
+.overlay--show{
+    display: flex;
+}

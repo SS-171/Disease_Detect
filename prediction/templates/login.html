@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Plant app</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="icon" href="{{ url_for('static', path='/img/favicon.png') }}" sizes="32x32">
+    <link href="{{ url_for('static', path='/css/login.css') }}" rel="stylesheet"/>
+    <!-- web font -->
+    <link href="//fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i" rel="stylesheet">
+    <!-- //web font -->
+</head>
+
+<body>
+
+    <div class="login wrapper">
+        <h1>LOGIN</h1>
+        <div class="content">
+            <div class="content__form">
+                <form id="signIn" action="/verify" method="post">
+                    <input id="sign-in-email" class="text email" type="text" name="username" placeholder="Username" required="">
+                    <input id="sign-in-password" class="text" type="password" name="password" placeholder="Password" required="">
+                    <input type="submit" value="SIGN IN">
+                </form>
+                <!-- <p>Don't have an account? <span class="signup__link"> Signup</span></p> -->
+            </div>
+        </div>
+    
+        <!-- //copyright -->
+    
+    </div>
+    <ul class="colorlib-bubbles">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</body>
+<script type="module">
+    
+        // Firsbase connect
+        // Import the functions you need from the SDKs you need
+        
+        const $ = document.querySelector.bind(document);
+        const $$ = document.querySelectorAll.bind(document);
+        const username = $('#username');
+        const password = $('#password');
+        const signInEmail = $('#sign-in-email');
+        const signInPwd = $('#sign-in-password');
+        const email = $('#email');
+        const confirmPwd = $('#confirm-pwd');
+
+
+        // 
+
+        const signupLink = document.querySelector(".signup__link");
+        const loginLink = document.querySelector(".login__link");
+        const loginForm = document.querySelector(".login");
+        const signupForm = document.querySelector(".signup");
+
+        loginLink.onclick = function () {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            loginForm.style.display = "block";
+            signupForm.style.display = "none";
+        }
+
+        // validate input
+        function validateEmail(email) {
+            if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+                return (true)
+            }
+            alert("You have entered an invalid email address!")
+            return (false)
+        }
+        function validatePassword(password) {
+            if (password.length < 6) {
+                alert("Password should have length more than 6 characters");
+                return false;
+            }
+            else return true;
+        }
+        function checkPwd(pwd1, pwd2) {
+            if (pwd1 !== pwd2) {
+                alert('Your password is not match')
+                return false;
+            }
+            else return true;
+        }
+        function validateUsername(username) {
+            if (username.length <= 0) {
+                alert("User name can't be null");
+                return false;
+
+            }
+            else return true;
+        }
+   
+</script>
+</html>

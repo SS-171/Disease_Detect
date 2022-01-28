@@ -1,0 +1,186 @@
+#setting{
+    position: absolute;
+    height: 100%;
+}
+.setting-container{
+    display : grid;
+    grid-template-columns: repeat(3, 1fr);
+    color: var(--text-color);
+    position: relative;
+    height: 100%;
+}
+
+.setting-right{
+    grid-column: 3;
+    grid-row: 1;
+    align-items: center;
+    background-color: #f3f9fa;
+}
+.setting-left{
+    grid-column: 1/3;
+    grid-row: 1;
+}
+
+/* for right */
+
+.setting-right__bgr{
+    object-fit: cover;
+    width: 100%;
+    height: 200px;
+    border-radius: 5px;
+}
+#setting .user__name{
+    font-size: 2rem;
+    padding: 2rem;
+}
+.setting-right__image{
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    margin-top: -60px;
+    margin-left: auto;
+    margin-right: auto;
+    object-fit: cover;
+    
+}
+.setting-address{
+    font-size: 1.5rem;
+    font-style: italic;
+}
+.setting-social{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    padding: 2rem;
+    text-align: left;
+    margin-left: 1rem;
+}
+.social__text{
+    font-weight: 600;
+    font-size: 1.6rem;
+    margin-right: 10px;
+}
+.social-list{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+.social__link{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 1px solid rgb(0, 0, 0 ,0.5);
+    margin: .8rem;
+}
+.social__link:nth-child(2){
+    background-color: #000;
+}
+.social__link i{
+    font-size: 2rem;
+}
+.social__link .bxl-facebook{
+    color: rgb(14, 43, 206);
+}
+.social__link .bxl-github{
+    color: #fff;
+}
+.social__link .bxl-gmail{
+    color: rgb(189, 38, 38);
+}
+
+.last-log{
+    padding: 1.5rem;
+    text-align: left;
+}
+.last-log__list{
+    margin-left: 1.5rem;
+
+}
+.last-log__text{
+    font-weight: 600;
+    font-size: 1.6rem;
+    margin-left: 1.5rem;
+    margin-bottom: .5rem;
+}
+.last-log__item{
+    padding: 1.5rem;
+    position: relative;
+}
+.last-log__item::before{
+    position: absolute;
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color:#000;
+    left: 0;
+    margin-right: 10px;
+    top: 45%;
+}
+.last-log__time{
+    font-size: 1.4rem;
+}
+
+/* for left setting */
+.setting-left{
+    margin-left: 1rem;
+}
+.update-info{
+    position: relative;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    padding: 2rem;
+    text-align: left;
+    display: flex;
+    justify-content: left;
+}
+.update-info__title{
+    font-weight: 600;
+    font-size: 1.6rem;
+    margin-right: 2rem;
+}
+.update-info__form{
+    display: block;
+}
+.update-info input[type="text"], 
+.update-info input[type="password"] {
+    display: block;
+    padding: .6rem .8rem;
+    border-radius: .5rem;
+    outline: none;
+    border: 1px solid rgb(175, 171, 171);
+    margin-bottom: 1rem;
+}
+.update-info input[type="text"]:focus, 
+.update-info input[type="password"]:focus{
+    border: 1px solid rgb(0,0,0,0.7)
+}
+
+.setting-left input[type="submit"]{
+    outline: none;
+    border: 1px solid #ccc;
+    padding : 4px;
+    background-color: rgb(55, 172, 55);
+    color: #fff;
+    border-radius: 4px;
+}
+.setting-left input[type="submit"]:hover{
+    filter: brightness(1.3);
+    cursor: pointer;
+}
+.logout{
+    text-align: left;
+    margin-top: 2rem;
+    margin-left: 20px;
+}
+.logout__btn{
+    padding: 1rem 1.5rem !important;
+}
+
+/* for admin account */

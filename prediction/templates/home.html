@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Prediction</title>
+    <link rel="icon" href="{{ url_for('static', path='img/favicon.png') }}" sizes="32x32">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/data.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/swiper-bundle.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/blog.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/setting.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+<!-- ChartJS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.min.js"
+        integrity="sha512-Wt1bJGtlnMtGP0dqNFH1xlkLBNpEodaiQ8ZN5JLA5wpc1sUlk/O5uuOMNgvzddzkpvZ9GLyYNa8w2s7rqiTk5Q=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300;1,400;1,500&display=swap"
+        rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+
+        <div class="menu">
+            <div class="menu__slogan">
+                <i class="bx bx-leaf menu__icon"></i>
+                <h4 class="slogan__content">DISEASE PREDICTION</h4>
+            </div>
+            <div class="user">
+                <img alt="" class="user__avatar">
+                <p class="user__name"></p>
+            </div>
+            <ul class="menu-list">
+                <li class="menu-item">
+                    <i class="bx bxs-home menu__icon "></i>
+                    <a href="#dashboard" class="content__item">Dashboard</a>
+                </li>
+
+                <li class="menu-item">
+                    <i class="bx bx-chart menu__icon"></i>
+                    <a href="#data" class="content__item">Data</a>
+                </li>
+                <li class="menu-item menu-graph">
+                    <div class="graph-name">
+                        <i class="bx bxs-dashboard menu__icon"></i>
+                        <a href="#blog" class="graph__title content__item">Blog</a>
+                        <i class="bx bx-down-arrow-alt menu__icon expand-arrow expand-arrow--down"></i>
+                    </div>
+                    <ul class="graph-list graph-list--show">
+                        <li class="graph__item">
+                            <a href="#early-blight"> Early blight</a>
+                        </li>
+                        <li class="graph__item">
+                            <a href="#late-blight"> Late blight</a>
+                        </li>
+                        <li class="graph__item">
+                            <a href="#bacterial-spot"> Bacterial spot</a>
+                        </li>
+                        <li class="graph__item">
+                            <a href="#yellow-leaf-curl">Yellow leaf curl virus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="menu-item">
+                    <i class="bx bxs-offer menu__icon"></i>
+                    <a href="#setting" class="content__item">Setting</a>
+                </li>
+            </ul>
+            <div class="replace-icons">
+                <div class="replace-icon__list">
+                    <a href="#dashboard" class="replace-icon__item content__item">
+                        <i class="bx bxs-home menu__icon"></i>
+                    </a>
+                    <a href="#data" class="replace-icon__item content__item">
+                        <i class="bx bxs-dashboard menu__icon"></i>
+                    </a>
+                    <a href="#blog" class="replace-icon__item content__item">
+                        <i class="bx bx-chart menu__icon"></i>
+                    </a>
+                    <a href="#setting" class="replace-icon__item content__item">
+                        <i class="bx bxs-offer menu__icon"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <ul class="content">
+            <li id="dashboard" class="content__item content--show">
+                
+                <div class="dashboard-container">
+                    <div class="custom-predict">
+                        <p class="dashboard__heading">Custom image predict</p>
+                        <form class="dashboard__btn dashboard__predict" method="post" action="/disease/predict">
+                            <input type="file" class="input__img" required>
+                            <input type="submit" class="predict-img__btn" value="Predict" ></input>
+                        </form>
+                        <div class="img__show">
+                            <div class="predict__result">
+                                <img src="{{ url_for('static', path='img/bacterialSpot/1.JPG') }}" alt="" class="predict__img">
+                                <p class="predict-result__text">Bacterial spot</p>
+                            </div>
+                            <div class="predict__result">
+                                <img src="{{ url_for('static', path='img/yellowleaf/1.JPG') }}" alt="" class="predict__img">
+                                <p class="predict-result__text">Yellow leaf curl virus</p>
+                            </div>
+                            
+
+                        </div>
+                    </div>
+                    <div class="control-container">
+                        <p class="dashboard__heading">Control dashboard</p>
+
+                        <div class="main-control">
+                            <div class="slider-control">
+                                <div class="cam-servo servo">
+                                    <input type="range" class="cam-slider slider" value="30" min="0" max="100" >
+                                    <p class="slider-text">Camera</p>
+                                </div>
+                                <div class="pump-servo servo">
+                                    <input type="range" class="pump-slider slider" min="0" max="100" value="30" >
+                                    <p class="slider-text">Pump</p>
+                                </div>
+                            </div>
+                            <div class="direct-btn">
+                                <div class="btn btn__up">
+                                    <i class="bx bxs-up-arrow"></i>
+                                </div>
+                                <div class="middle-btn">
+                                    <div class="btn btn__left">
+                                        <i class="bx bxs-left-arrow"></i>
+                                    </div>
+                                    <div class="btn btn__stop">Stop</div>
+                                    <div class="btn btn__right">
+                                        <i class="bx bxs-right-arrow"></i>
+                                    </div>
+                                </div>
+                                <div class="btn btn__down">
+                                    <i class="bx bxs-down-arrow"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="water-tank">
+                        <p class="dashboard__heading">Water level</p>
+                        <div class="water__container">
+                            <ul class="scale">
+                                <li class="scale__item"><p>1000</p></li>
+                                <li class="scale__item"><p>500</p></li>
+                                <li class="scale__item"><p>0</p> </li>
+                            </ul>
+                            <div class="tank__container">
+                                <meter class="tank-level" min="0" max="1000" value="250" low="340" high="600" optimum="900"></meter> 
+                            </div>
+                        </div>
+                        </div>
+                    <div class="temp-humid">
+                        <p class="dashboard__heading">Temperature and humidity</p>
+                        <div class="dashboard__envi">
+                            <img src="{{ url_for('static', path='img/temp.svg') }}" width="60" height="60"> </img>
+                            <p class="dashboard-envi__text ">Temperature</p>
+                            <p class="envi__value current-temp">37°C</p>
+                        </div>
+                        <div class="dashboard__envi">
+                            <img src="{{ url_for('static', path='img/humid.svg') }}" width="60" height="60"> </img>
+                            <p class="dashboard-envi__text ">Temperature</p>
+                            <p class="envi__value current-humid">60%</p>
+                        </div>
+                    </div>
+                    
+                </div>
+
+            </li>
+            <li id="data" class="content__item">
+                <div class="data-menu">
+                    <i class="bx bx-menu data-menu__icon" onclick=toggleDataMenu()></i>
+                    <ul class="data-menu__list" onclick=toggleDataMenu()>
+                        <li class="data-menu__item">
+                            <a href="#temperature">Temperature</a>
+                        </li>
+                        
+                        <li class="data-menu__item">
+                            <a href="#results">Prediction results</a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- for temperature chart -->
+                <div id="temperature" class="data-item temperature">
+                    <span class="data__label">TEMPERATURE AND HUMIDITY</span>
+                    <div class="date-container">
+                        <div class="date__time">
+                            <label class="date__label">Choose a date</label>
+                            <input type="date" class="date-envi"  min="2022-01-01" max="2022-12-31">
+                        </div>
+                        
+                        <button class="check-temp">Get data</button>
+                        <button class="envi-delete__btn">Delete all</button>
+                    </div>
+                    <div class="chart">
+                        <canvas id="tempChart" ></canvas>
+                    </div>
+                </div>
+ 
+                
+                <!-- for prediction results -->
+                <div id="results" class="data-item image">
+                    <span class="data__label">PREDICTION RESULTS</span>
+                    <div class="date-container">
+                        <div class="date__time">
+                            <label class="date__label">Choose a date</label>
+                            <input type="date" class="date-predict" value="2022-01-01" min="2022-01-01" max="2022-12-31">
+                        </div>
+                        <button class="check-predict">Get data</button>
+                        <button class="predict-delete__btn">Delete all</button>
+
+                    </div>
+                    <table class="img-table">
+                        <tr>
+                            <th>Kết quả dự đoán</th>
+                            <th>Thời gian</th>
+                            <th>Chi tiết bệnh</th>
+                            <th>Hình ảnh</th>
+                        </tr>
+                        <tr>
+                            <td>Eearly blight</td>
+                            <td>01/01/2022</td>
+                            <td>
+                                <a href="#early-blight" class="data-disease__detail">Xem chi tiết</a>
+                            </td>
+                            <td>
+                                <p url="https://drive.google.com/uc?export=view&id=19sgL9dFsvQal2kz-lCaavE3pzFcBqNRW" class="img-show">Xem ảnh</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Late blight</td>
+                            <td>02/01/2022</td>
+                            <td>
+                                <a href="#late-blight"  class="data-disease__detail">Xem chi tiết</a>
+                            </td>
+                            <td>
+                                <p url="https://drive.google.com/uc?export=view&id=19sgL9dFsvQal2kz-lCaavE3pzFcBqNRW" class="img-show">Xem ảnh</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Bacterial spot</td>
+                            <td>03/01/2022</td>
+                            <td>
+                                <a href="#bacterial-spot"  class="data-disease__detail">Xem chi tiết</a>
+                            </td>
+                            <td>
+                                <p url="https://drive.google.com/uc?export=view&id=19sgL9dFsvQal2kz-lCaavE3pzFcBqNRW" class="img-show">Xem ảnh</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Bacterial spot</td>
+                            <td>04/01/2022</td>
+                            <td>
+                                <a href="#bacterial-spot" class="data-disease__detail">Xem chi tiết</a>
+                            </td>
+                            <td>
+                                <p url="https://drive.google.com/uc?export=view&id=1AVfDYoHdkfmlJF06LzUzq_BkGcVkqSm1" class="img-show">Xem ảnh
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+               
+                <!-- overlay showing image -->
+                
+            </li>
+            <li id="blog" class="content__item">
+                <div class="blog__banner">
+                    <p class="banner__text">CÁC LOẠI BỆNH TRÊN CÂY CÀ CHUA</p>
+                </div>
+                <ul class="disease__list">
+                    <li  class="disease__item">
+                        <p id="early-blight"class="disease__heading">1. BỆNH ÚA SỚM (Early blight)</p>
+                        <p class="sub-content">
+                            Bệnh úa sớm còn được gọi là bệnh đốm vòng, là một bệnh phổ biến của cà chua do nấm Alternaria solani gây ra. Bệnh úa sớm xuất hiện hầu hết ở các vùng trồng cà chua. Bệnh làm giảm số lượng và kích thước
+                            quả. Nó có thể xâm nhiễm đến hầu hết các bộ phận của cây cà chua, bao gồm cả lá, thân và quả. Cây cà chua có thể không
+                            chết, nhưng sẽ bị suy yếu và sinh trưởng kém. các cây sinh trưởng kém là đặc biệt nhạy cảm với bệnh.
+                        </p>
+                        <div class="blog-container">
+                            <div class="swiper blog__swiper">
+                                <div class="swiper-wrapper">
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/yellowleaf/1.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/yellowleaf/2.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/yellowleaf/3.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img  src="{{ url_for('static', path='img/yellowleaf/4.JPG') }}" alt="">
+                                    </div>
+                                </div>
+                                <div class="swiper-pagination"></div>
+                                <div class="swiper-button-prev"></div>
+                                <div class="swiper-button-next"></div>
+                            </div>
+                        </div>
+                        <p class="sub-heading">a. Triệu chứng</p>
+                        <p class="sub-content">
+                            Trên lá, vết bệnh thường xuất hiện đầu tiên ở lá già có hình tròn hoặc hình bầu dục, có vòng đồng tâm, màu nâu đen.
+                            Lúc
+                            đầu, vết bệnh nhỏ, sau to dần, đường kính vết bệnh đến 1-2 cm. Khi trên lá có nhiều vết bệnh, các vết liên kết với
+                            nhau
+                            hình thành vết lớn không định hình, khu vực xung quanh lá chuyển vàng, Khi cây bị bệnh nặng lá phía dưới chết và rụng
+                            sớm
+                            khiến các chùm quả phơi bày ra bị rám nắng
+                        </p>
+                        <p class="sub-heading">b. Nguyên nhân gây bệnh</p>
+                        <p class="sub-content">Sợi nấm <a href="https://en.wikipedia.org/wiki/Alternaria_solani" target="_blank" class="ref-link">Alternaria solani</a> có vách ngăn, phân nhánh, màu nâu tối. nấn sinh sản bằng cách hình thành Bào tử đính , bào tử
+                        đính có hình quả lựu đạn có nhiều vách ngăn ngang, có mỏ dài hơi khoằm, màu nâu tối, kích thước 120-296</p>
+                        <div class="sub-img">
+                            <img src="{{ url_for('static', path='img/yellowleaf/cause.PNG') }}" alt="">
+                        </div>
+                        <p class="sub-heading">c. Đặc điểm phát sinh, phát triển</p>
+                        <p class="sub-content">
+                            Bào tử phân sinh nảy mầm trong giọt nước sau 1-2 giờ ở phạm vi nhiệt độ 16-34°C, nhiệt độ thích hợp nhất cho nấm phát
+                            triển là 26-28°C
+                        </p>
+                        <p class="sub-heading">d. Biện pháp phòng trừ</p>
+                        <ul class="sub-solution">
+                            <li class="solution-item">Vệ sinh vườn</li>
+                            <li class="solution-item">Mua hạt giống từ các nguồn uy tín và kiểm tra trước khi trồng</li>
+                            <li class="solution-item">Lưu thông khí, cần cung cấp nhiều không gian giữa các cây, trồng đúng mật độ tạo nên tiểu khí hậu khô ráo</li>
+                            
+                        </ul>
+                        <div class="sub-solution">
+                            <p class="solution-item">Sử dụng các loại thuốc bảo vệ thực vật như:</p> 
+                            <ul class="pesticide-list">
+                                <li class="pesticide-item">Hoạt chất Azoxystrobin như Amista pha liều 25ml/ 25 lít nước</li>
+                                <li class="pesticide-item">Hoạt chất Chlorothalonil như Daconil…</li>
+                                <li class="pesticide-item">Hỗn hợp của Azoxystrobin và Difenconazol. như Amista top. ..</li>
+                            </ul>
+                        </div>
+                        
+                    </li>
+                    <li class="disease__item">
+                        <p id="late-blight" class="disease__heading">2. BỆNH ÚA MUỘN (Late blight)</p>
+                        <p class="sub-content">
+                        Bệnh gây hại từ khi cây còn nhỏ, thường thấy giai đoạn cây ra hoa đến thu hoạch. Bệnh gây hại trên lá, thân và quả.
+                        </p>
+                        <div class="blog-container">
+                            <div class="swiper blog__swiper">
+                                <div class="swiper-wrapper">
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/lateBlight/1.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/lateBlight/2.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/lateBlight/3.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/lateBlight/4.JPG') }}" alt="">
+                                    </div>
+                                </div>
+                                <div class="swiper-pagination"></div>
+                                <div class="swiper-button-prev"></div>
+                                <div class="swiper-button-next"></div>
+                            </div>
+                        </div>
+                        <p class="sub-heading">a. Triệu chứng</p>
+                        <p class="sub-content">
+                            Vết bệnh đầu tiên ở mép lá, có màu xanh tái như úng nước, sau đó lan dần vào phía trong phiến lá, màu nâu, có ranh giới
+                            rõ rệt với phần còn lại của phiến lá. Ở mặt dưới lá chổ vết bệnh có lớp mốc trắng như sương, bệnh nặng làm lá thối nhũn,
+                            thời tiết khô vết bệnh khô dòn dễ vỡ.
+                        </p>
+                        <p class="sub-heading">b. Nguyên nhân gây bệnh</p>
+                        <p class="sub-content">Nấm <a href="https://vi.wikipedia.org/wiki/Phytophthora_infestans" target="_blank"
+                                class="ref-link">Phytophthora infestans</a> 
+                        </p>
+                        <div class="sub-img">
+                            <img src="{{ url_for('static', path='img/lateBlight/cause.PNG') }}" alt="">
+                        </div>
+                        <p class="sub-heading">c. Đặc điểm phát sinh, phát triển</p>
+                        <p class="sub-content">
+                            Bệnh thường phát triển mạnh trong điều kiện thời tiết ẩm và mát, nhiệt độ 18-22°C, có một thời gian nhiệt độ xuống thấp
+                            12-15oC, có nhiều sương và mưa
+                        </p>
+                        <p class="sub-heading">d. Biện pháp phòng trừ</p>
+                        <ul class="sub-solution">
+                            <li class="solution-item">Vệ sinh đồng ruộng, thu gom và tiêu hủy tàn dư cây bệnh.</li>
+                            <li class="solution-item">Bón vôi, phân hữu cơ, phân gà trước khi gieo trồng.</li>
+                            <li class="solution-item">Luân canh với cây trồng khác, không luân canh với khoai tây.</li>
+                        
+                        </ul>
+                        <div class="sub-solution">
+                            <p class="solution-item">Sử dụng các loại thuốc bảo vệ thực vật như:</p>
+                            <ul class="pesticide-list">
+                                <li class="pesticide-item">REVUS OPTI 440SC (Hoạt chất: Mandipropamid).</li>
+                                <li class="pesticide-item">AGRONIL 75WP (Hoạt chất: Chlorothalonil).</li>
+                                <li class="pesticide-item">Hoạt chất Fluazinam</li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="disease__item">
+                        <p id="bacterial-spot" class="disease__heading">3. BỆNH ĐỐM VI KHUẨN (Bacterial spot)</p>
+                        <p class="sub-content">
+                            Bệnh đốm đen vi khuẩn hại cà chua xảy ra chủ yếu ở lá và quả, có khi vết
+                            bệnh xuất hiện trên cả cuống lá và thân cây. Bệnh xuất hiện từ thời kỳ cây con cho đến cây có quả chín. Gây thiệt hại
+                            không nhỏ đến năng suất và chất lượng quả về sau
+                        </p>
+                        <div class="blog-container">
+                            <div class="swiper blog__swiper">
+                                <div class="swiper-wrapper">
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/bacterialSpot/1.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/bacterialSpot/2.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/bacterialSpot/3.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/bacterialSpot/4.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/bacterialSpot/5.JPG') }}" alt="">
+                                    </div>
+                                </div>
+                                <div class="swiper-pagination"></div>
+                                <div class="swiper-button-prev"></div>
+                                <div class="swiper-button-next"></div>
+                            </div>
+                        </div>
+                        <p class="sub-heading">a. Triệu chứng</p>
+                        <p class="sub-content">
+                            Triệu chứng bệnh đốm đen vi khuẩn trên lá: vết bệnh là những chấm nhỏ kích thước từ 1 - 2 mm, có màu xanh giọt giầu hoặc
+                            xanh xám, về sau giữa vết bệnh chuyển màu đen, xung quanh đốm đen có quầng vàng (mô xung quanh vàng nhạt)
+                        </p>
+                        <p class="sub-heading">b. Nguyên nhân gây bệnh</p>
+                        <p class="sub-content">Bệnh đốm đen vi khuẩn hại cà chua do vi khuẩn <a href="https://en.wikipedia.org/wiki/Xanthomonas_campestris_pv._vesicatoria" target="_blank"
+                                class="ref-link">Xanthomonas campestris </a>gây ra. Vi khuẩn có hình gậy ngắn kích thước từ
+                                0,6 - 0,7x 1 - 1,5 micromet. Có 1 lông roi ở đầu, có vỏ nhờn.
+                        </p>
+                        <div class="sub-img">
+                            <img src="{{ url_for('static', path='img/bacterialSpot/cause.PNG') }}" alt="">
+                        </div>
+                        <p class="sub-heading">c. Đặc điểm phát sinh, phát triển</p>
+                        <p class="sub-content">
+                            Nhiệt độ tối thích cho sự phát triển của vi khuẩn là 25 - 30ºC, nhiệt độ gây chết cho vi khuẩn 56ºC. Vì vậy bệnh đốm đen
+                            phát triển mạnh trên đồng ruộng trong điều kiện nhiệt độ tương đối cao 23 - 30ºC và trong điều kiện ẩm độ không khí cao
+                            đặc biệt là lá cây ẩm ướt, trong thời kỳ mưa gió thường xảy ra liên tục
+                        </p>
+                        <p class="sub-heading">d. Biện pháp phòng trừ</p>
+                        <ul class="sub-solution">
+                            <li class="solution-item">vệ sinh, tiêu diệt tàn dư cây bệnh trên đất ruộng, cầy lật vùi lấp tàn dư sau thu hoạch</li>
+                            <li class="solution-item">Luân canh cây cà chua với cây trồng nước (lúa) hoặc các cây trồng cạn không là ký chủ như dưa chuột, ngô,....</li>
+                            <li class="solution-item">Gieo hạt giống khỏe, sạch bệnh. Xử lý hạt giống.</li>
+                    
+                        </ul>
+                        <div class="sub-solution">
+                            <p class="solution-item">Các thuốc hóa học khuyến cáo để phòng và kiểm soát bệnh là gốc đồng + mancozeb để phun định kỳ phòng trừ bệnh</p>
+                           
+                        </div>
+                    </li>
+                    <li class="disease__item">
+                        <p id="yellow-leaf-curl" class="disease__heading">4. BỆNH XOĂN VÀNG LÁ (Yellow leaf curl virus)</p>
+                        <p class="sub-content">
+                            Bệnh xoăn vàng lá cà chua (TYLCV) rất phổ biến và nghiêm trọng trên cà chua. Cây con bị nhiễm bệnh sẽ sinh trưởng kém,
+                            cây trở nên nhỏ và biến thành dạng bụi, khóm. Bệnh làm cho lá cây nhỏ, vàng giữa các gân lá và xoăn lên phía trên trông
+                            giống như dạng hình cốc. Cây bị bệnh làm giảm số lượng hoa và quả.
+                        </p>
+                        <div class="blog-container">
+                            <div class="swiper blog__swiper">
+                                <div class="swiper-wrapper">
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/yellowleaf/1.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/yellowleaf/1.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/yellowleaf/1.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/yellowleaf/1.JPG') }}" alt="">
+                                    </div>
+                                    <div class="blog__img swiper-slide">
+                                        <img src="{{ url_for('static', path='img/yellowleaf/1.JPG') }}" alt="">
+                                    </div>
+                                </div>
+                                <div class="swiper-pagination"></div>
+                                <div class="swiper-button-prev"></div>
+                                <div class="swiper-button-next"></div>
+                            </div>
+                        </div>
+                        <p class="sub-heading">a. Triệu chứng</p>
+                        <p class="sub-content">
+                            Bệnh xoăn lá ở cà chua rất dễ nhận biết. Khi nhiễm bệnh lá sẽ xoăn vàng, nhăn nheo. Cây giảm khả năng quang hợp, khiến
+                            cây sinh trưởng kém, khô cằn và không ra quả. Cây có thể ra hoa và quả, nhưng sẽ bị rụng nhiều. Nếu có quả thì quả cũng
+                            nhỏ, biến dạng, cứng và chất lượng không đạt chuẩn.
+                        </p>
+                        <p class="sub-heading">b. Nguyên nhân gây bệnh</p>
+                        <p class="sub-content">Virus gây bệnh xoăn lá cà chua thuộc giống <a href="https://en.wikipedia.org/wiki/Begomovirus" target="_blank"
+                                class="ref-link">Begomovirus</a>, họ Germinivirus gây bệnh hại cây trồng phổ biến trên thế giới.
+                                Có khoảng 40 loài begomovirus gây bệnh xoăn vàng lá cà chua.
+                        </p>
+                        <div class="sub-img">
+                            <img src="{{ url_for('static', path='img/yellowleaf/cause.PNG') }}" alt="">
+                        </div>
+                        <p class="sub-heading">c. Đặc điểm phát sinh, phát triển</p>
+                        <p class="sub-content">
+                            Các begomovirus cà chua không truyền qua hạt giống, không truyền qua tiếp xúc cơ học. Vius xâm nhập vào cây và đồng
+                            ruộng bằng bọ phấn (Bemisia tabaci).
+                        </p>
+                        <p class="sub-heading">d. Biện pháp phòng trừ</p>
+                        <ul class="sub-solution">
+                            <li class="solution-item">Sử dụng giống kháng bệnh.</li>
+                            <li class="solution-item">Tiêu diệt nguồn bệnh trên đồng ruộng (nhổ bỏ, tiêu hủy cây bị bệnh).</li>
+                            <li class="solution-item">Nhổ bỏ cây cà chua mọc tự do hoặc cây tàn dư sau khi thu hoạch</li>
+                            <li class="solution-item">Không luân canh với các cây trồng là ký chủ của bệnh như là ớt.</li>
+                        </ul>
+                        <div class="sub-solution">
+                            <p class="solution-item">
+                                Sử dụng các chế phẩm sinh học chứa thành phần chitosan là chất kích kháng thực vật kiểm soát sự phát triển của
+                                virus,
+                                ngăn chặn virus lây lan trên
+                                diện rộng và khi phun vào đọt sẽ không bị xoăn nữa, đồng thời bổ sung dinh dưỡng để cây phụ hồi nhanh hơn bằng các
+                                loại
+                                phân bón
+                            </p>
+                        </div>
+                       
+                    </li>
+                </ul>
+                
+            </li>
+            <li id="setting" class="content__item">
+
+                <div class="setting-container">
+                    <div class="setting-right">
+                        <img src="{{ url_for('static', path='img/dut.PNG') }}" class="setting-right__bgr"></img>
+                        <img  alt="" class="setting-right__image">
+                        <p class="user__name"></p>
+                        <p class="setting-address">Đại học Bách Khoa Đà Nẵng</p>
+                        <div class="setting-social">
+                            <p class="social__text">Connect:</p>
+                            <div class="social-list">
+                                <a href="#" class="social__link">
+                                    <i class="bx bxl-facebook" class="social__icon"></i>
+                                </a>
+                                <a href="https://github.com/SS-171" class="social__link">
+                                    <i class="bx bxl-github" class="social__icon"></i>
+                                </a>
+                                <a href="#" class="social__link">
+                                    <i class="bx bxl-gmail" class="social__icon"></i>
+                                </a>
+
+                            </div>
+                        </div>
+                        <div class="last-log">
+                            <p class="last-log__text">Last logged:</p>
+                            <ul class="last-log__list">
+  
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="setting-left">
+                        <div class="update-info">
+                            <p class="update-info__title">Update username:</p>
+                            <form class="update-info__form">
+                                <input type="text" name="username" class="update-info__input" placeholder="New username" required />
+                                <input type="submit" value="Update" class="update-info__btn">
+                            </form>
+                        </div>
+                        <div class="update-info">
+                            <p class="update-info__title">Update password:</p>
+                            <form action="/changePwd" class="update-info__form" method="post">
+                                <input type="password" class="update-info__input current-password" placeholder="Current password" required>
+                                <input type="password" class="update-info__input newpassword" placeholder="New password" name="password" required>
+                                <input type="password" class="update-info__input confirm-newpassword" placeholder="Confirm password" required>
+                                <input type="submit"  value="Update" class="update-info__btn submit-newpassword"></input>
+                            </form>
+                        </div>
+ 
+                        <div class="update-info admin">
+                            <p class="update-info__title">Create new user:</p>
+                            <form action="/admin/create/user" method="post">
+                                <input type="text" class="update-info__input new" name="username" placeholder="Username" value="">
+                                <input type="password" class="update-info__input new" name="password" placeholder="Password" value="">
+                                <input type="submit" class="update-info__btn">
+                            </form>
+                        </div>
+                        <form action="/logout" method="get" class="logout">
+                            <input class = "logout__btn" type="submit" value="Log out">
+                        </form>
+                    </div>
+                </div>
+                
+            </li>
+            <a href="#" class="scrollup" id="scroll-up">
+                <i class="bx bx-up-arrow scrollup__icon"></i>
+            </a>
+
+        </ul>
+        <div class="overlay">
+            <img src="https://drive.google.com/uc?export=view&id=11zSf6DDz-cvLO7W7m05eQzS2bGBUepRn" alt="" class="overlay__img">
+        </div>
+    </div>
+</body>
+</html>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.0/socket.io.js"
+    integrity="sha512-zpwALZtEUgguEViSrR8yVZpFH0QBBtr9gJ6QUHglri7i+SyUcrr/3o9mfMI12REAGVqMmkwGzkEguFBF7LOpFw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{{ url_for('static', path='js/swiper-bundle.min.js') }}"></script>
+<script src="{{ url_for('static', path='js/script.js') }}"></script>
