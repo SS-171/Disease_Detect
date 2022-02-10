@@ -1,4 +1,4 @@
-p// for expand arrow
+// for expand arrow
 
 var $ = document.querySelector.bind(document);
 var $$ = document.querySelectorAll.bind(document);
@@ -7,15 +7,14 @@ const graphList = $('.graph-list');
 const contentItems = $$('.menu .content__item');
 const dataList = $('.data-menu__list');
 const dataListBtn = $('.data-menu__icon');
-const imageLinks = $$('.img-show');
 const overlayImg = $('.overlay__img');
 const overlay = $('.overlay');
 const diseaseMenuItems = $$(".graph__item a");
-const dataDiseaseDetail = $$('.data-disease__detail');
+
 const username = $('.user__name')
 const tempCtx = $('#tempChart');
 let dateEnvi = $('.date-envi')
-const datePredict = $('.date-predict')
+let datePredict = $('.date-predict')
 let settingUser = $("#setting .user__name")
 let tempChart;
 // render chart
@@ -82,15 +81,7 @@ function renderChart(tempData, humidData) {
 function toggleDataMenu() {
     dataList.classList.toggle("data-menu--show");
 }
-// showing image in overlay
-imageLinks.forEach(function (each) {
-    each.onclick = function (e) {
-        e.stopPropagation()
-        const imgUrl = each.getAttribute("url");
-        overlayImg.setAttribute("src", imgUrl)
-        overlay.classList.add('overlay--show')
-    }
-})
+
 overlayImg.onclick = function (e) {
     e.stopPropagation();
 }
@@ -161,22 +152,18 @@ const blogSwiper = new Swiper('.blog__swiper', {
 });
 
 
-// FOR DATA PAGE
-dataDiseaseDetail.forEach(each => {
-    each.onclick = () => {
-        disappearContent();
-        $(".content #blog").classList.add('content--show')
-    }
-})
+
 
 // WEBSOCKET
 const socket = io("/")
 socket.on("connect", () => {
     console.log('Websocket connected!')
+    console.log(getDate())
     dateEnvi.value = getDate()
     datePredict.value = getDate()
     socket.emit("jsConnect", "js connected")
     socket.emit("date", getDate())
+    socket.emit("predict-date", getDate())
 
 })
 
@@ -218,8 +205,8 @@ const currentHumid = $('.current-humid')
 socket.on("envi", data => {
     console.log("temp", data.temp)
     console.log("humid", data.humid)
-    currentTemp.innerText = `${data.temp}°C}`
-    currentHumid.innerText = `${data.humid}%}`
+    currentTemp.innerText = `${data.temp}°C`
+    currentHumid.innerText = `${data.humid}%`
 })
 
 // for setting PAGE
@@ -240,38 +227,96 @@ submitNewPwd.onclick = function (e) {
     }
 }
 
-// get data for data page
+// Get DATA FOR DATA PAGE
+// get envi data
 const checkEnvi = $(".check-temp")
-const checkPredict = $(".check-predict")
 
-
-checkEnvi.onclick = function () {
+checkEnvi.onclick = function (e) {
     tempChart.destroy()
     socket.emit('date', dateEnvi.value)
 }
 
-// listen to required envi result
+// Listen to required envi result
 socket.on("enviResult", data => {
     handleChartData(data)
 })
-// Delete user data
+
+//GET PREDICT DATA TABLE
+function showDetail(){
+    disappearContent();
+    $(".content #blog").classList.add('content--show')
+
+}
+function showDiseaseImage(){
+    event.stopPropagation()
+    const imgUrl = event.target.getAttribute("url")
+    overlayImg.setAttribute("src", imgUrl)
+    overlay.classList.add('overlay--show')
+}
+
+// 
+const checkPredict = $(".check-predict")
+const imageTable = $('.img-table')
+let htmlRows = '';
+let headerTable = `
+    <tr>
+        <th>Kết quả dự đoán</th>
+        <th>Thời gian</th>
+        <th>Chi tiết bệnh</th>
+        <th>Hình ảnh</th>
+    </tr>
+`
+checkPredict.onclick = function () {
+    socket.emit('predict-date', datePredict.value)
+}
+socket.on("predictResult",function (data){
+    
+    let html = data.map((each, index)=>{
+        let htmlContent = 
+        `
+        <tr>
+            <td>${each.status}</td>
+            <td>${each.timeCreated}</td>
+            <td>
+                <a href="#${each.status}" class="data-disease__detail" onclick=showDetail()>Xem chi tiết</a>
+            </td>
+            <td>
+                <p url="${each.image_url}" class="img-show" onclick=showDiseaseImage() >Xem ảnh</p>
+            </td>
+        </tr>
+        `
+        return htmlContent
+    })
+    htmlRows = html.join("")
+    let htmlTable = headerTable.concat(htmlRows)
+    imageTable.innerHTML = htmlTable
+    
+    
+})
+// DELETE USER DATA
 const predictDelete = $('.predict-delete__btn')
 predictDelete.onclick = function(){
-    console.log('deleting')
-    alert('Are you sure to delele?')
-    fetch('/image/all/delete')
-    .then(response => response.json())
-    .then(data => alert('Delete successfully'))
+    let a= confirm('Are you sure to delele?')
+    if(a){
+        fetch('/images/all/delete')
+        .then(response => response.json())
+        .then(data => alert('Delete successfully'))
+        .catch(error => alert(error))
+    }
 }
 const enviDelete = $('.envi-delete__btn')
 enviDelete.onclick = function () {
     console.log('deleting')
-    alert('Are you sure to delele?')
-    fetch('/envis/all/delete')
-        .then(response => response.json())
-        .then(data => alert('Delete successfully'))
+    let a = confirm('Are you sure to delele?')
+    if(a){
+        fetch('/envis/all/delete')
+            .then(response => response.json())
+            .then(data => alert('Delete successfully'))
+            .catch(error => alert(error))
+    }
 }
-// for control command from js
+
+// FOR CONTROL COMMAND
 const turnLeft = $(".btn.btn__left")
 const turnRight = $(".btn.btn__right")
 const forward = $(".btn.btn__up")
@@ -294,7 +339,7 @@ stopCmd.onclick = () => {
     socket.emit("control", "stop")
 }
 
-//for admin handle
+//FOR ADMIN HANDLE
 const adminText = $('.admin__text')
 const userCreate = $('.update-info.admin')
 const userAvatar = $('.user__avatar')
@@ -305,19 +350,19 @@ function adminHandle(isAdmin) {
         $$('.update-info__input.new').forEach(e => {
             e.value = ""
         })
-        userAvatar.setAttribute("src", "/static/img/admin.jpeg")
-        settingUserAvt.setAttribute("src", "static/img/admin.jpeg")
+        userAvatar.setAttribute("src", "/prediction/static/img/admin.jpeg")
+        settingUserAvt.setAttribute("src", "/prediction/static/img/admin.jpeg")
 
     }
     else {
         userCreate.style.display = "none"
-        userAvatar.setAttribute("src", "/static/img/user.png")
-        settingUserAvt.setAttribute("src", "/static/img/user.png")
+        userAvatar.setAttribute("src", "/prediction/static/img/user.png")
+        settingUserAvt.setAttribute("src", "/prediction/static/img/user.png")
     }
 }
 
 
-// For prediction
+// FOR PREDICTION
 const form = $('.dashboard__predict')
 const inputImg = $('.input__img')
 const submitBtn = $(".predict-img__btn")
@@ -325,39 +370,48 @@ const predictResult = $(".img__show")
 let htmlResult ="";
 submitBtn.onclick = function (e) {
     console.log("submit")
-    predictResult.innerHTML = `
-    <p class="predicting__status> Predicting</p>
-    `
-    e.preventDefault();
-    let data = new FormData()
-    data.append('file', inputImg.files[0])
-    fetchImage(data)
-        .then(result => {
-            console.log(result)
-            if (typeof (result) === "string") {
-                predictResult.innerHTML = `
-                     <p class="predicting__status>${result}</p>
-                    `
-            }
-            else {
-                Object.keys(result).forEach(each => {
-                    console.log(each)
-                    console.log("status", result[each].status)
-                    console.log("url-img", result[each].url)
-                    let html= `
-                        <div class="predict__result">
-                            <img src="${result[each].url}" alt="" class="predict__img">
-                            <p class="predict-result__text">${result[each].status}</p>
-                        </div>
-                    `
-                    htmlResult = htmlResult.concat(html)
-
-                })
-                console.log(htmlResult)
+    if(inputImg.value){
+        htmlResult =""
+        predictResult.innerHTML = `
+        <p class="predicting__status"> Predicting...</p>
+        `
+        e.preventDefault();
+        let data = new FormData()
+        data.append('file', inputImg.files[0])
+        fetchImage(data)
+            .then(result => {
+                if (typeof(result) === "string") {
+                    console.log(result)
+                    htmlResult = `
+                         <p class="predict-result__text">Not found any leaf in image</p>
+                        `
+                }
+                else {
+                    Object.keys(result).forEach(each => {
+                        console.log(each)
+                        console.log("status", result[each].status)
+                        console.log("url-img", result[each].url)
+                        let html= `
+                            <div class="predict__result">
+                                <img src="${result[each].url}" alt="" class="predict__img">
+                                <p class="predict-result__text">${result[each].status}</p>
+                            </div>
+                        `
+                        htmlResult = htmlResult.concat(html)
+    
+                    })
+                    
+                }
+            })
+            .then(result=>{
                 predictResult.innerHTML = htmlResult
+                if (datePredict.value == getDate()){
+                    socket.emit("predict-date", getDate())
+                }
 
-            }
-        })
+            })
+    }
+    else alert("You ain't chosen an image yet")
 }
 async function fetchImage(data){
     let response = await fetch("/disease/predict",{
@@ -385,8 +439,9 @@ function handleChartData(data) {
 }
 function getDate() {
     const d = new Date()
-    month = d.getMonth() + 1
-    let date = `${d.getFullYear()}-${month < 10 ? '0' + month : month}-${d.getDate()}`
+    month = d.getMonth() < 10 ? '0' + (d.getMonth() + 1) : d.getMonth()
+    day = d.getDate() < 10 ? '0' + d.getDate() : d.getDate()
+    let date = `${d.getFullYear()}-${month}-${day}`
     return date
 }
 

@@ -5,7 +5,6 @@ import numpy as np
 import os 
 from datetime import datetime
 from ..database.config.db import PlantCollection
-from ..database.models.plant import Plant
 from ..database.APIDrive.drive import saveToDrive
 from PIL import Image
 import random
@@ -14,6 +13,18 @@ from .source import get_mask_contours, load_inference_model
 from .classify import  preprocess,extract_features, predict
 num_classes = 1
 model, inference_config = load_inference_model(num_classes, MODEL_DIR)
+def getPredictTime():
+    now = datetime.now()
+    nowStr = now.strftime("%Y-%m-%d %H:%M:%S")
+    return nowStr
+def savePredictResult(url, status):
+    now = getPredictTime().split(" ")
+    PlantCollection.insert_one({
+        "image_url": url,
+        "status": status,
+        "dateCreated" : now[0],
+        "timeCreated": now[1]
+    })
 def toCvImg(image: Image):
     return np.asarray(image)
 def center_crop(img, dim):
@@ -67,13 +78,8 @@ def predict_segment(image):
                 img_url = saveToDrive(img_path, img_name)
                 os.remove(img_path)
                 # SAVE TO MONGODB
-                plant = Plant(
-                    image_url = img_url,
-                    status = str(pred_result),
-                    # srcID = srcID,
-                    created_at = datetime.now())
-                    
-                PlantCollection.insert_one(dict(plant))
+                savePredictResult(img_url, pred_result)
+                
                 # 
                 response = {
                     "url" : img_url,

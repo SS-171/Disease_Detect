@@ -1,4 +1,4 @@
-from prediction.database.config.db import UserCollection, LogCollection,EnviCollection
+from prediction.database.config.db import UserCollection, LogCollection,EnviCollection, PlantCollection
 from datetime import datetime
 import prediction.app.authenticate as auth
 def getLogTime():
@@ -18,8 +18,8 @@ def getLog():
     list_log = list(logHis)
     return list_log
 
-def filterData(chosenDate):
-    data = EnviCollection.find({"dateCreated": chosenDate},{"_id": 0, "dateCreated": 0})
+def filterData(collection,chosenDate):
+    data = collection.find({"dateCreated": chosenDate},{"_id": 0, "dateCreated": 0})
     return data
 def saveEnvi(temp, humid):
     now = getEnviTime().split(" ")
@@ -72,8 +72,12 @@ def websocket(sio, socket_app, app):
 
     @sio.on("date")
     async def getdate(sid, chosenDate):
-        data = list(filterData(chosenDate))
+        data = list(filterData(EnviCollection,chosenDate))
         await sio.emit("enviResult", data)
+    @sio.on('predict-date')
+    async def getPredict(sid, chosenDate):
+        data = list(filterData(PlantCollection,chosenDate))
+        await sio.emit("predictResult", data)
 
     @sio.on("disconnect")
     async def disconnect(sid):

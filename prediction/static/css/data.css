@@ -92,6 +92,9 @@
     color: #fff;
     margin-left: 10px;
 }
+.date-container .btn--delete{
+    background-color: rgb(207, 17, 17);
+}
 .date-container button:hover{
     filter: brightness(1.2)
 }

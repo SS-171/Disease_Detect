@@ -30,3 +30,7 @@ pymongo
 
 # for saving img to mongo
 pydrive
+
+# for client
+requests
+urllib3

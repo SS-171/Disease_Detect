@@ -54,16 +54,16 @@
                     </div>
                     <ul class="graph-list graph-list--show">
                         <li class="graph__item">
-                            <a href="#early-blight"> Early blight</a>
+                            <a href="#Early_blight"> Early blight</a>
                         </li>
                         <li class="graph__item">
-                            <a href="#late-blight"> Late blight</a>
+                            <a href="#Late_blight"> Late blight</a>
                         </li>
                         <li class="graph__item">
-                            <a href="#bacterial-spot"> Bacterial spot</a>
+                            <a href="#Bacterial_spot"> Bacterial spot</a>
                         </li>
                         <li class="graph__item">
-                            <a href="#yellow-leaf-curl">Yellow leaf curl virus</a>
+                            <a href="#Yellow_Leaf_Curl_Virus">Yellow leaf curl virus</a>
                         </li>
                     </ul>
                 </li>
@@ -96,18 +96,18 @@
                     <div class="custom-predict">
                         <p class="dashboard__heading">Custom image predict</p>
                         <form class="dashboard__btn dashboard__predict" method="post" action="/disease/predict">
-                            <input type="file" class="input__img" required>
+                            <input type="file" class="input__img" required="">
                             <input type="submit" class="predict-img__btn" value="Predict" ></input>
                         </form>
                         <div class="img__show">
-                            <div class="predict__result">
+                            <!-- <div class="predict__result">
                                 <img src="{{ url_for('static', path='img/bacterialSpot/1.JPG') }}" alt="" class="predict__img">
                                 <p class="predict-result__text">Bacterial spot</p>
                             </div>
                             <div class="predict__result">
                                 <img src="{{ url_for('static', path='img/yellowleaf/1.JPG') }}" alt="" class="predict__img">
                                 <p class="predict-result__text">Yellow leaf curl virus</p>
-                            </div>
+                            </div> -->
                             
 
                         </div>
@@ -198,7 +198,7 @@
                         </div>
                         
                         <button class="check-temp">Get data</button>
-                        <button class="envi-delete__btn">Delete all</button>
+                        <button class="envi-delete__btn btn--delete">Delete all</button>
                     </div>
                     <div class="chart">
                         <canvas id="tempChart" ></canvas>
@@ -215,7 +215,7 @@
                             <input type="date" class="date-predict" value="2022-01-01" min="2022-01-01" max="2022-12-31">
                         </div>
                         <button class="check-predict">Get data</button>
-                        <button class="predict-delete__btn">Delete all</button>
+                        <button class="predict-delete__btn btn--delete">Delete all</button>
 
                     </div>
                     <table class="img-table">
@@ -225,47 +225,18 @@
                             <th>Chi tiết bệnh</th>
                             <th>Hình ảnh</th>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <td>Eearly blight</td>
                             <td>01/01/2022</td>
                             <td>
-                                <a href="#early-blight" class="data-disease__detail">Xem chi tiết</a>
+                                <a href="#Late_blight" class="data-disease__detail">Xem chi tiết</a>
                             </td>
                             <td>
                                 <p url="https://drive.google.com/uc?export=view&id=19sgL9dFsvQal2kz-lCaavE3pzFcBqNRW" class="img-show">Xem ảnh</p>
                             </td>
-                        </tr>
-                        <tr>
-                            <td>Late blight</td>
-                            <td>02/01/2022</td>
-                            <td>
-                                <a href="#late-blight"  class="data-disease__detail">Xem chi tiết</a>
-                            </td>
-                            <td>
-                                <p url="https://drive.google.com/uc?export=view&id=19sgL9dFsvQal2kz-lCaavE3pzFcBqNRW" class="img-show">Xem ảnh</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Bacterial spot</td>
-                            <td>03/01/2022</td>
-                            <td>
-                                <a href="#bacterial-spot"  class="data-disease__detail">Xem chi tiết</a>
-                            </td>
-                            <td>
-                                <p url="https://drive.google.com/uc?export=view&id=19sgL9dFsvQal2kz-lCaavE3pzFcBqNRW" class="img-show">Xem ảnh</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Bacterial spot</td>
-                            <td>04/01/2022</td>
-                            <td>
-                                <a href="#bacterial-spot" class="data-disease__detail">Xem chi tiết</a>
-                            </td>
-                            <td>
-                                <p url="https://drive.google.com/uc?export=view&id=1AVfDYoHdkfmlJF06LzUzq_BkGcVkqSm1" class="img-show">Xem ảnh
-                                </p>
-                            </td>
-                        </tr>
+                        </tr> -->
+                     
+                        
                     </table>
                 </div>
                
@@ -278,7 +249,7 @@
                 </div>
                 <ul class="disease__list">
                     <li  class="disease__item">
-                        <p id="early-blight"class="disease__heading">1. BỆNH ÚA SỚM (Early blight)</p>
+                        <p id="Early_blight"class="disease__heading">1. BỆNH ÚA SỚM (Early blight)</p>
                         <p class="sub-content">
                             Bệnh úa sớm còn được gọi là bệnh đốm vòng, là một bệnh phổ biến của cà chua do nấm Alternaria solani gây ra. Bệnh úa sớm xuất hiện hầu hết ở các vùng trồng cà chua. Bệnh làm giảm số lượng và kích thước
                             quả. Nó có thể xâm nhiễm đến hầu hết các bộ phận của cây cà chua, bao gồm cả lá, thân và quả. Cây cà chua có thể không
@@ -344,7 +315,7 @@
                         
                     </li>
                     <li class="disease__item">
-                        <p id="late-blight" class="disease__heading">2. BỆNH ÚA MUỘN (Late blight)</p>
+                        <p id="Late_blight" class="disease__heading">2. BỆNH ÚA MUỘN (Late blight)</p>
                         <p class="sub-content">
                         Bệnh gây hại từ khi cây còn nhỏ, thường thấy giai đoạn cây ra hoa đến thu hoạch. Bệnh gây hại trên lá, thân và quả.
                         </p>
@@ -404,7 +375,7 @@
                         </div>
                     </li>
                     <li class="disease__item">
-                        <p id="bacterial-spot" class="disease__heading">3. BỆNH ĐỐM VI KHUẨN (Bacterial spot)</p>
+                        <p id="Bacterial_spot" class="disease__heading">3. BỆNH ĐỐM VI KHUẨN (Bacterial spot)</p>
                         <p class="sub-content">
                             Bệnh đốm đen vi khuẩn hại cà chua xảy ra chủ yếu ở lá và quả, có khi vết
                             bệnh xuất hiện trên cả cuống lá và thân cây. Bệnh xuất hiện từ thời kỳ cây con cho đến cây có quả chín. Gây thiệt hại
@@ -466,7 +437,7 @@
                         </div>
                     </li>
                     <li class="disease__item">
-                        <p id="yellow-leaf-curl" class="disease__heading">4. BỆNH XOĂN VÀNG LÁ (Yellow leaf curl virus)</p>
+                        <p id="Yellow_Leaf_Curl_Virus" class="disease__heading">4. BỆNH XOĂN VÀNG LÁ (Yellow leaf curl virus)</p>
                         <p class="sub-content">
                             Bệnh xoăn vàng lá cà chua (TYLCV) rất phổ biến và nghiêm trọng trên cà chua. Cây con bị nhiễm bệnh sẽ sinh trưởng kém,
                             cây trở nên nhỏ và biến thành dạng bụi, khóm. Bệnh làm cho lá cây nhỏ, vàng giữa các gân lá và xoăn lên phía trên trông
