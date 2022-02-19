@@ -17,9 +17,10 @@ def getPredictTime():
     now = datetime.now()
     nowStr = now.strftime("%Y-%m-%d %H:%M:%S")
     return nowStr
-def savePredictResult(url, status):
+def savePredictResult(url, status, img_id):
     now = getPredictTime().split(" ")
     PlantCollection.insert_one({
+        "image_id": img_id,
         "image_url": url,
         "status": status,
         "dateCreated" : now[0],
@@ -75,14 +76,14 @@ def predict_segment(image):
                 img_name = random.randint(0,9)
                 img_path = f'prediction\Img_process\\resource\seg_img\img_{img_name}.jpg'
                 cv.imwrite(img_path, cv_img)
-                img_url = saveToDrive(img_path, img_name)
+                savedImg = saveToDrive(img_path, img_name)
                 os.remove(img_path)
                 # SAVE TO MONGODB
-                savePredictResult(img_url, pred_result)
+                savePredictResult(savedImg['image_url'], pred_result, savedImg['image_id'])
                 
                 # 
                 response = {
-                    "url" : img_url,
+                    "url" : savedImg['image_url'],
                     "status" : pred_result
                 }
                 result[f"l{contour_count}"] = response

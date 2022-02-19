@@ -11,16 +11,12 @@ def saveToDrive(img, name):
     file1.Upload()
     print("title : %s, id: %s" % (file1['title'], file1['id']))
     img_url = f"https://drive.google.com/uc?export=view&id={file1['id']}"
-    return img_url
-def deleteInDrive(id):
+    res = {"image_url": img_url, "image_id" : file1['id']}
+    return res
+def deleteDateDriveData(id_list):
     images = drive.ListFile({'q': f"'{folderID}' in parents and trashed=false"}).GetList()
     for image in images:
-        if (image['id'] == id):
+        if (image['id'] in id_list):
             image.Delete()
-            break
-    
-def deleteAllInDrive():
-    images = drive.ListFile({'q': f"'{folderID}' in parents and trashed=false"}).GetList()
-    for image in images:
-        image.Delete()
+
     

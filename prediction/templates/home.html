@@ -118,11 +118,11 @@
                         <div class="main-control">
                             <div class="slider-control">
                                 <div class="cam-servo servo">
-                                    <input type="range" class="cam-slider slider" value="30" min="0" max="100" >
+                                    <input type="range" class="cam-slider slider" value="0" min="0" max="2600">
                                     <p class="slider-text">Camera</p>
                                 </div>
                                 <div class="pump-servo servo">
-                                    <input type="range" class="pump-slider slider" min="0" max="100" value="30" >
+                                    <input type="range" class="pump-slider slider" value="0" min="0" max="2600 >
                                     <p class="slider-text">Pump</p>
                                 </div>
                             </div>
@@ -198,7 +198,7 @@
                         </div>
                         
                         <button class="check-temp">Get data</button>
-                        <button class="envi-delete__btn btn--delete">Delete all</button>
+                        <button class="envi-delete__btn btn--delete">Delete</button>
                     </div>
                     <div class="chart">
                         <canvas id="tempChart" ></canvas>
@@ -215,7 +215,7 @@
                             <input type="date" class="date-predict" value="2022-01-01" min="2022-01-01" max="2022-12-31">
                         </div>
                         <button class="check-predict">Get data</button>
-                        <button class="predict-delete__btn btn--delete">Delete all</button>
+                        <button class="predict-delete__btn btn--delete">Delete</button>
 
                     </div>
                     <table class="img-table">
@@ -561,8 +561,14 @@
                             <form action="/admin/create/user" method="post">
                                 <input type="text" class="update-info__input new" name="username" placeholder="Username" value="">
                                 <input type="password" class="update-info__input new" name="password" placeholder="Password" value="">
-                                <input type="submit" class="update-info__btn">
+                                <input type="submit" class="update-info__btn create-user">
                             </form>
+                        </div>
+                        <div class="user-management">
+                            <p class="update-info__title">All users:</p>
+                            <table class="user-table">
+                                
+                            </table>
                         </div>
                         <form action="/logout" method="get" class="logout">
                             <input class = "logout__btn" type="submit" value="Log out">
@@ -577,7 +583,7 @@
 
         </ul>
         <div class="overlay">
-            <img src="https://drive.google.com/uc?export=view&id=11zSf6DDz-cvLO7W7m05eQzS2bGBUepRn" alt="" class="overlay__img">
+            <img src="" alt="" class="overlay__img">
         </div>
     </div>
 </body>

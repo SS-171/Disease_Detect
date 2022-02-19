@@ -10,7 +10,8 @@ const dataListBtn = $('.data-menu__icon');
 const overlayImg = $('.overlay__img');
 const overlay = $('.overlay');
 const diseaseMenuItems = $$(".graph__item a");
-
+const camSlider = $('.cam-slider')
+const pumpSlider = $(".pump-slider")
 const username = $('.user__name')
 const tempCtx = $('#tempChart');
 let dateEnvi = $('.date-envi')
@@ -155,15 +156,18 @@ const blogSwiper = new Swiper('.blog__swiper', {
 
 
 // WEBSOCKET
+let cookie = document.cookie
+let usernameText = cookie.split('=').pop()
+username.innerText = usernameText
+settingUser.innerText = usernameText
 const socket = io("/")
 socket.on("connect", () => {
     console.log('Websocket connected!')
-    console.log(getDate())
     dateEnvi.value = getDate()
     datePredict.value = getDate()
-    socket.emit("jsConnect", "js connected")
-    socket.emit("date", getDate())
-    socket.emit("predict-date", getDate())
+    socket.emit("jsConnect", usernameText)
+    socket.emit("date", { date: getDate() })
+    socket.emit("predict-date", { date: getDate()})
 
 })
 
@@ -171,11 +175,13 @@ socket.on("connect", () => {
 
 // render username
 let dbPassword = "";
-socket.on("user", data => {
-    username.innerText = data.username
-    dbPassword = String(data.password)
-    settingUser.innerText = data.username
-    adminHandle(data.isAdmin)
+let isAdmin = false
+socket.on("user", user => {
+    if (user.sid == socket.id) {
+        dbPassword = String(user.password)
+        isAdmin = Boolean(user.isAdmin)
+        adminHandle(user.isAdmin)
+    }
 
 })
 // get log history
@@ -209,7 +215,45 @@ socket.on("envi", data => {
     currentHumid.innerText = `${data.humid}%`
 })
 
-// for setting PAGE
+// SETTING PAGE
+// 
+let userTable = $('.user-table')
+let onlineUsers = []
+let userList = []
+socket.on("users", users => {
+    userTable.innerHTML = `
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Date created</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    `
+    onlineUsers = users.onlineUsers
+    userList = users.userList
+    userListHandle(users.userList)
+    console.log("online",onlineUsers)
+})
+// validate user create
+const updateUsername = $(".update-info.admin input[name='username']")
+const updateInfoBtn = $(".update-info__btn.create-user")
+updateInfoBtn.onclick = function (e) {
+    console.log("click")
+    let isSame = false
+    userList.map(each => {
+        if (each.username == updateUsername.value) {
+            isSame = true
+        }
+    })
+    if (isSame) {
+        e.preventDefault()
+        alert('This username has already existed. Try another one.')
+    }
+
+}
+// update username and password
 const currentPassword = $('.current-password')
 const newPassword = $('.newpassword')
 const confirmPwd = $('.confirm-newpassword')
@@ -226,6 +270,54 @@ submitNewPwd.onclick = function (e) {
         alert('Your current password was wrong. Please try again.')
     }
 }
+function checkOnline(username) {
+    let isOnline = false
+    onlineUsers.forEach(each => {
+        if(each.username === username) {
+            isOnline = true
+        }
+    })
+    return isOnline
+}
+function userListHandle(users) {
+    users.map((each, index) => {
+        let isOnline = checkOnline(each.username)
+        console.log("name", each.username, "isOnline", isOnline)
+        let row = userTable.insertRow(index + 1)
+        let cell1 = row.insertCell(0)
+        let cell2 = row.insertCell(1)
+        let cell3 = row.insertCell(2)
+        let cell4 = row.insertCell(3)
+        let cell5 = row.insertCell(4)
+        let cell6 = row.insertCell(5)
+        cell1.innerHTML = index + 1
+        cell2.innerHTML = each.username
+        cell3.innerHTML = each.dateCreated
+        cell4.innerHTML = `
+            <p class="user-list__text">${each.isAdmin ? "Admin" : "User"}</p>
+        `
+        cell5.innerHTML = `
+            <div class="flex-userlist">
+                <div id="user-number-${index + 1}" class="online-icon"></div>
+                <p class="user-list__text">${isOnline ? "Online" : "Offline"}</p>
+            </div>
+        `
+        if (isAdmin) {
+            if(!each.isAdmin)
+            cell6.innerHTML = `
+                <a href="/admin/delete/user/?username=${each.username}" class="delete-user">
+                    <i class="bx bxs-x-circle"></i>
+                </a>
+            `
+        }
+        if (isOnline) {
+            console.log($(`#user-number-${index + 1}`))
+            $(`#user-number-${index+ 1}`).classList.add("online-icon--online")
+        }
+
+    })
+}
+
 
 // Get DATA FOR DATA PAGE
 // get envi data
@@ -233,13 +325,15 @@ const checkEnvi = $(".check-temp")
 
 checkEnvi.onclick = function (e) {
     tempChart.destroy()
-    socket.emit('date', dateEnvi.value)
+    socket.emit('date', {date: dateEnvi.value})
 }
 
 // Listen to required envi result
 socket.on("enviResult", data => {
     handleChartData(data)
 })
+
+
 
 //GET PREDICT DATA TABLE
 function showDetail(){
@@ -267,7 +361,7 @@ let headerTable = `
     </tr>
 `
 checkPredict.onclick = function () {
-    socket.emit('predict-date', datePredict.value)
+    socket.emit('predict-date', {date:datePredict.value})
 }
 socket.on("predictResult",function (data){
     
@@ -298,25 +392,30 @@ const predictDelete = $('.predict-delete__btn')
 predictDelete.onclick = function(){
     let a= confirm('Are you sure to delele?')
     if(a){
-        fetch('/images/all/delete')
+        fetch(`/images/date/delete/${datePredict.value}`)
         .then(response => response.json())
-        .then(data => alert('Delete successfully'))
+        .then(data => {
+            socket.emit("predict-date", { date: datePredict.value})
+            alert('Delete successfully')
+        })
         .catch(error => alert(error))
     }
 }
 const enviDelete = $('.envi-delete__btn')
 enviDelete.onclick = function () {
-    console.log('deleting')
     let a = confirm('Are you sure to delele?')
     if(a){
-        fetch('/envis/all/delete')
+        fetch(`/envis/date/delete/${dateEnvi.value}`)
             .then(response => response.json())
-            .then(data => alert('Delete successfully'))
+            .then(data => {
+                socket.emit("date", { date: dateEnvi.value })
+                alert('Delete successfully')
+            })
             .catch(error => alert(error))
     }
 }
 
-// FOR CONTROL COMMAND
+// FOR DASHBOBARD
 const turnLeft = $(".btn.btn__left")
 const turnRight = $(".btn.btn__right")
 const forward = $(".btn.btn__up")
@@ -339,6 +438,51 @@ stopCmd.onclick = () => {
     socket.emit("control", "stop")
 }
 
+// Camera and pump position update
+let currentCamPos = 0
+let currentPumpPos = 0
+socket.on("camPos1", data => {
+    if (data.sid !== socket.id) {
+        camSlider.value = data.pos
+        currentCamPos = camSlider.value
+    }
+})
+socket.on("pumpPos1", data => {
+    if (data.sid !== socket.id) {
+        pumpSlider.value = data.pos
+        currentPumpPos = pumpSlider.value
+    }
+})
+
+camSlider.onchange = function () {
+    let direct;
+    nowCamPos = Number(camSlider.value)
+    if (nowCamPos > currentCamPos) {
+        direct = 0
+        pulse = nowCamPos - currentCamPos
+    }
+    else {
+        direct = 1
+        pulse = currentCamPos - nowCamPos
+    }
+    currentCamPos = nowCamPos
+    socket.emit('camPos', { direct: direct, pulse: pulse, pos: currentCamPos })
+}
+pumpSlider.onchange = function () {
+    let direct;
+    nowPumpPos = Number(pumpSlider.value)
+    if (nowPumpPos > currentPumpPos) {
+        direct = 0
+        pulse = nowPumpPos - currentPumpPos
+    }
+    else {
+        direct = 1
+        pulse = currentPumpPos - nowPumpPos
+    }
+    currentPumpPos = nowPumpPos
+    socket.emit('pumpPos', { direct: direct, pulse: pulse, pos: currentPumpPos })
+}
+
 //FOR ADMIN HANDLE
 const adminText = $('.admin__text')
 const userCreate = $('.update-info.admin')
@@ -352,7 +496,10 @@ function adminHandle(isAdmin) {
         })
         userAvatar.setAttribute("src", "/prediction/static/img/admin.jpeg")
         settingUserAvt.setAttribute("src", "/prediction/static/img/admin.jpeg")
-
+        // get all user
+        fetch("/users/all")
+        .then(response => response.json())
+        .then(data => console.log("user list", data))
     }
     else {
         userCreate.style.display = "none"
@@ -406,7 +553,8 @@ submitBtn.onclick = function (e) {
             .then(result=>{
                 predictResult.innerHTML = htmlResult
                 if (datePredict.value == getDate()){
-                    socket.emit("predict-date", getDate())
+                    socket.emit('predict-date', { date: datePredict.value })
+
                 }
 
             })
@@ -445,4 +593,7 @@ function getDate() {
     return date
 }
 
-
+window.onbeforeunload = function () {
+    document.cookie = `username = ${usernameText}`
+    return confirm("confirm refresh")
+}

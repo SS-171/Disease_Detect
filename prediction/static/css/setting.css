@@ -184,3 +184,58 @@
 }
 
 /* for admin account */
+.user-management{
+    position: relative;
+    width: 90%;
+    font-size: 1.4rem;
+}
+.user-management .update-info__title{
+    text-align: left;
+    margin-left: 2rem;
+    margin-bottom: 2rem;
+}
+
+.user-table{
+    border-collapse: collapse;
+    border-radius: .5rem;
+    overflow: hidden;
+    margin-left: 2rem;
+
+}
+.user-table th{
+    background-color: #ccc;
+}
+.user-table tr{
+    border-bottom: 1px solid #ccc;
+}
+.user-table th, .user-table td{
+    padding: 1.3rem 1.8rem;
+    text-align : center;
+    border: none;
+
+}
+.flex-userlist{
+    display :flex;
+    align-items: center;
+}
+.user-icon{
+    font-size: 2rem;
+    color:rgb(14, 43, 206);
+    margin-right : .8rem;
+}
+.online-icon{
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-right: .8rem;
+}
+.online-icon--online{
+    background-color:rgb(55, 172, 55);
+
+}
+.delete-user{
+    color: red;
+    font-size: 1.8rem;
+    margin-top: 10%;
+}

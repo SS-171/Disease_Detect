@@ -4,7 +4,7 @@ from fastapi_login import LoginManager
 from prediction.database.config.db import UserCollection
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 class NotAuthenticatedException(Exception):
     pass
@@ -19,9 +19,10 @@ def load_user(username:str):
     return user
 
 user  = {
-    "username" : "Thanhnhon",
-    "password" : "12346",
-    "isAdmin": False
+    "username" : "admin",
+    "password" : "1234",
+    "isAdmin": False,
+    "dateCreated": str
 }
 
 templates = Jinja2Templates(directory="prediction\\templates")
@@ -30,16 +31,18 @@ templates = Jinja2Templates(directory="prediction\\templates")
 
 # update password
 def updatePassword(newPwd):
-    dbUser = UserCollection.find_one({"username": currentUser})
+    dbUser = UserCollection.find_one({"username": curentUser})
     oldPassword = {"password" : dbUser.get('password')}
     newPassword = { "$set": {"password" : newPwd}}
     UserCollection.update_one(oldPassword, newPassword)
 # update username
 def updateUsername(newUser):
-    oldUsername = {"username" : currentUser}
+    oldUsername = {"username" : curentUser}
     newUsername = { "$set": {"username" : newUser}}
     UserCollection.update_one(oldUsername, newUsername)
-
+def getUserCreateTime():
+    now = datetime.now()
+    return now.strftime("%d-%m-%Y")
 
 def authenticate(app):
     @app.get("/login", response_class=HTMLResponse)
@@ -57,9 +60,10 @@ def authenticate(app):
             data = {"sub": username}, expires = timedelta(minutes=15)
         )
         resp = RedirectResponse(url="/", status_code = status.HTTP_302_FOUND)
-        global currentUser
-        currentUser = username
+        global curentUser
+        curentUser = username
         manager.set_cookie(resp, access_token)
+        resp.set_cookie(key="username", value = curentUser)
         return resp
                 
     @app.get("/", response_class=HTMLResponse)
@@ -86,8 +90,15 @@ def authenticate(app):
     def adminCreateUser(username: str = Form(...), password:str = Form(...)):
         user['username'] = username
         user['password'] = password
+        user['dateCreated'] = getUserCreateTime()
         UserCollection.insert_one(user)
         return RedirectResponse(url= "/", status_code = status.HTTP_302_FOUND)
+    @app.get('/admin/delete/user/')
+    def adminDeleteUser(username: str):
+        print("username", username)
+        UserCollection.delete_one({"username": username})
+        return RedirectResponse(url= "/", status_code = status.HTTP_302_FOUND)
+
     # logout
     @app.get('/logout')
     async def logout(request: Request):
