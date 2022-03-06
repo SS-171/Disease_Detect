@@ -97,18 +97,9 @@
                         <p class="dashboard__heading">Custom image predict</p>
                         <form class="dashboard__btn dashboard__predict" method="post" action="/disease/predict">
                             <input type="file" class="input__img" required="">
-                            <input type="submit" class="predict-img__btn" value="Predict" ></input>
+                            <input type="submit" class="submit__btn predict-img__btn" value="Predict" ></input>
                         </form>
                         <div class="img__show">
-                            <!-- <div class="predict__result">
-                                <img src="{{ url_for('static', path='img/bacterialSpot/1.JPG') }}" alt="" class="predict__img">
-                                <p class="predict-result__text">Bacterial spot</p>
-                            </div>
-                            <div class="predict__result">
-                                <img src="{{ url_for('static', path='img/yellowleaf/1.JPG') }}" alt="" class="predict__img">
-                                <p class="predict-result__text">Yellow leaf curl virus</p>
-                            </div> -->
-                            
 
                         </div>
                     </div>
@@ -116,14 +107,25 @@
                         <p class="dashboard__heading">Control dashboard</p>
 
                         <div class="main-control">
-                            <div class="slider-control">
-                                <div class="cam-servo servo">
-                                    <input type="range" class="cam-slider slider" value="0" min="0" max="2600">
-                                    <p class="slider-text">Camera</p>
+                            <div class="main-left-control">
+                                <div class="plant-height">
+                                    <input type="text" list="heights" class="height__input">
+                                    <datalist id="heights">
+                                        <option value="20"></option>
+                                        <option value="40"></option>
+                                        <option value="60"></option>
+                                    </datalist>
+                                    <input type="submit" value="Submit" class="submit__btn height-submit">
                                 </div>
-                                <div class="pump-servo servo">
-                                    <input type="range" class="pump-slider slider" value="0" min="0" max="2600 >
-                                    <p class="slider-text">Pump</p>
+                                <div class="slider-control">
+                                    <div class="cam-servo servo">
+                                        <input type="range" class="cam-slider slider" value="0" min="0" max="2500">
+                                        <p class="slider-text">Camera</p>
+                                    </div>
+                                    <div class="pump-servo servo">
+                                        <input type="range" class="pump-slider slider" value="0" min="0" max="2500">
+                                        <p class="slider-text">Pump</p>
+                                    </div>
                                 </div>
                             </div>
                             <div class="direct-btn">
@@ -259,16 +261,16 @@
                             <div class="swiper blog__swiper">
                                 <div class="swiper-wrapper">
                                     <div class="blog__img swiper-slide">
-                                        <img src="{{ url_for('static', path='img/yellowleaf/1.JPG') }}" alt="">
+                                        <img src="{{ url_for('static', path='img/earlyBlight/1.JPG') }}" alt="">
                                     </div>
                                     <div class="blog__img swiper-slide">
-                                        <img src="{{ url_for('static', path='img/yellowleaf/2.JPG') }}" alt="">
+                                        <img src="{{ url_for('static', path='img/earlyBlight/2.JPG') }}" alt="">
                                     </div>
                                     <div class="blog__img swiper-slide">
-                                        <img src="{{ url_for('static', path='img/yellowleaf/3.JPG') }}" alt="">
+                                        <img src="{{ url_for('static', path='img/earlyBlight/3.JPG') }}" alt="">
                                     </div>
                                     <div class="blog__img swiper-slide">
-                                        <img  src="{{ url_for('static', path='img/yellowleaf/4.JPG') }}" alt="">
+                                        <img  src="{{ url_for('static', path='img/earlyBlight/4.JPG') }}" alt="">
                                     </div>
                                 </div>
                                 <div class="swiper-pagination"></div>

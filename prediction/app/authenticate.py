@@ -1,11 +1,12 @@
 from fastapi import FastAPI, Request, Form, Depends, status
 from fastapi_login.exceptions import InvalidCredentialsException
 from fastapi_login import LoginManager
+from numpy import save
 from prediction.database.config.db import UserCollection
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from datetime import timedelta, datetime
-
+from .websocket import saveLogToDb
 class NotAuthenticatedException(Exception):
     pass
 # authenticate
@@ -62,6 +63,7 @@ def authenticate(app):
         resp = RedirectResponse(url="/", status_code = status.HTTP_302_FOUND)
         global curentUser
         curentUser = username
+        saveLogToDb(curentUser)
         manager.set_cookie(resp, access_token)
         resp.set_cookie(key="username", value = curentUser)
         return resp

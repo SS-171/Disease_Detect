@@ -4,28 +4,19 @@ import cv2 as cv
 import numpy as np
 import os 
 from datetime import datetime
-from ..database.config.db import PlantCollection
-from ..database.APIDrive.drive import saveToDrive
 from PIL import Image
 import random
+import matplotlib.pyplot as plt
 MODEL_DIR = "prediction/Img_process/resource/model2.h5"
-from .source import get_mask_contours, load_inference_model
-from .classify import  preprocess,extract_features, predict
+from prediction.Img_process.source import get_mask_contours, load_inference_model
+from prediction.Img_process.classify import  preprocess,extract_features, predict
 num_classes = 1
 model, inference_config = load_inference_model(num_classes, MODEL_DIR)
 def getPredictTime():
     now = datetime.now()
     nowStr = now.strftime("%Y-%m-%d %H:%M:%S")
     return nowStr
-def savePredictResult(url, status, img_id):
-    now = getPredictTime().split(" ")
-    PlantCollection.insert_one({
-        "image_id": img_id,
-        "image_url": url,
-        "status": status,
-        "dateCreated" : now[0],
-        "timeCreated": now[1]
-    })
+
 def toCvImg(image: Image):
     return np.asarray(image)
 def center_crop(img, dim):
@@ -37,15 +28,38 @@ def getContoursArea(contours):
         c_area = cv.contourArea(cnt)
         cnt_area = sorted(np.append(cnt_area, c_area ), reverse=True)
         return np.mean(cnt_area)
-def predict_segment(image):
-    image = toCvImg(image)
+def furtherSegment(img):
+
+    image = cv.imread(img)
+    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    blur = cv.GaussianBlur(gray, (5,5), 0)
+    
+    # _, digital = cv.threshold(gray, 75, 255, cv.THRESH_BINARY_INV)
+    edged = cv.Canny(blur, 150, 200)
+    # contours, hierarchy = cv.findContours(edged, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
+    # cv.drawContours(image, contours, -1, (0, 255, 0), 1)
+    # cv.imshow("segment1", digital)
+    
+    # contours, hierarchy = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
+    # cv.drawContours(image, contours, -1, (0, 0, 255), 1)
+    cv.imshow("img", edged)
+    cv.waitKey(0)
+
+# furtherSegment("prediction\static\img\\bacterialSpot\\2.JPG")
+
+def predict_segment(url):
+    # image  = preprocess(image)
+    result = {}
+    img = cv.imread(url)
+    image = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+    
+    
     # MASK SEGMENTATION
     blank = np.zeros(image.shape, dtype=np.uint8)
     # Detect results
     r = model.detect([image])[0]
     object_count = len(r["class_ids"])
     contour_count = 0
-    result ={}
     for i in range(object_count):
         # 1. Mask
         mask = r["masks"][:, :, i]
@@ -59,28 +73,24 @@ def predict_segment(image):
                 max = np.amax(cnt, axis=0)
                 dim_object = [min, max]
                 # draw contour
-                mask = cv.drawContours(blank.copy(), [cnt],0, (255,255,255), -1)
-                new_img =cv.bitwise_and(image, mask)
+                img_mask = cv.drawContours(blank.copy(), [cnt],0, (255,255,255), -1)
+                new_img =cv.bitwise_and(image, img_mask)
                 crop_img = center_crop(new_img, dim_object)
-                cv_img = cv.cvtColor(cv.resize(crop_img, (150, 150)), cv.COLOR_BGR2RGB)
-                # SAVE TO DRIVE
-                # Preprocess 
+                cv_img = cv.cvtColor(crop_img, cv.COLOR_BGR2RGB)
+            
                 seg_img = preprocess(crop_img)
-                # Extract features
+        
                 features = extract_features(seg_img)
-                # Classify
+          
                 pred_result = predict(features)
-                # SAVE TO DRIVE
-                img_name = random.randint(0,9)
+
+                img_name = random.randint(0,150)
                 img_path = f'prediction\Img_process\\resource\seg_img\img_{img_name}.jpg'
                 cv.imwrite(img_path, cv_img)
-                savedImg = saveToDrive(img_path, img_name)
                 os.remove(img_path)
-                # SAVE TO MONGODB
-                savePredictResult(savedImg['image_url'], pred_result, savedImg['image_id'])
-                # 
+               
                 response = {
-                    "url" : savedImg['image_url'],
+                
                     "status" : pred_result
                 }
                 result[f"l{contour_count}"] = response
@@ -91,4 +101,4 @@ def predict_segment(image):
         
    
 
-
+print(predict_segment("prediction\static\img\\real_img\\4.jpg"))

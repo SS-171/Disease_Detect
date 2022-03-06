@@ -1,11 +1,13 @@
+from re import A
 from fastapi import APIRouter, Request, WebSocket
 from starlette.responses import RedirectResponse
-from prediction.database.config.db import PlantCollection, EnviCollection, UserCollection
+from prediction.database.config.db import PlantCollection, EnviCollection, UserCollection, LogCollection
 from bson import ObjectId
 from prediction.database.schemas.plant import plantEntity, plantsEntity
 from prediction.database.schemas.envi import enviEntity, envisEntity
 from prediction.database.models.envi import Envi
 from prediction.database.APIDrive.drive import  deleteDateDriveData
+
 from datetime import datetime
 router = APIRouter()
 
@@ -35,3 +37,7 @@ async def getUsers():
     users = UserCollection.find({}, {"_id": 0,"password":0})
     return list(users)
 
+@router.get("/logs/deleteAll")
+async def deleteLogs():
+    LogCollection.delete_many({})
+    return {"message": "Delete succesfully"}

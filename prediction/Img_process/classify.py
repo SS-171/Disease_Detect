@@ -9,7 +9,7 @@ import keras
 input_shape = (150, 150)
 base_model = keras.models.load_model("prediction/Img_process/resource/base_model.h5")
 xgmodel = xgb.Booster()
-xgmodel.load_model('prediction//Img_process//resource//xgb_model.bin')
+xgmodel.load_model('prediction//Img_process//resource//xgb_model2.bin')
 labels = ['Bacterial_spot', 'Early_blight', 'Late_blight',
            'Yellow_Leaf_Curl_Virus', 'healthy']
 
@@ -29,14 +29,14 @@ def preprocess(image):
     image = np.expand_dims(image, 0)
     return image
     
-def preprocess1(image):
-    # IF NOT SEG 
-    image = cv.resize(np.asfarray(image), input_shape)
+# def preprocess1(image):
+#     # IF NOT SEG 
+#     image = cv.resize(np.asfarray(image), input_shape)
     
-    # 
-    image = image/255
-    image = np.expand_dims(image, 0)
-    return image
+#     # 
+#     image = image/255
+#     image = np.expand_dims(image, 0)
+#     return image
 def extract_features(img):
     feature = base_model.predict(img)
     features = feature.reshape(feature.shape[0], -1)

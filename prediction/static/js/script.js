@@ -186,20 +186,25 @@ socket.on("user", user => {
 })
 // get log history
 const logsList = $('.last-log__list')
-socket.on("logs", logHistory => {
-    let htmls = logHistory.map(each => {
-        let datetime = String(each.time).split(" ")
-        let date = datetime[0]
-        let time = datetime[1]
+socket.on("logs", data => {
+    let logHistory = data.logs
+    let name = data.username
+    if(name == usernameText){
 
-        let listItem = `
-            <li class="last-log__item">
-                <p class="last-log__time">${date} at ${time}</p>
-            </li>
-        `
-        return listItem
-    })
-    logsList.innerHTML = htmls.join("");
+        let htmls = logHistory.map(each => {
+            let datetime = String(each.time).split(" ")
+            let date = datetime[0]
+            let time = datetime[1]
+    
+            let listItem = `
+                <li class="last-log__item">
+                    <p class="last-log__time">${date} at ${time}</p>
+                </li>
+            `
+            return listItem
+        })
+        logsList.innerHTML = htmls.join("");
+    }
 
 })
 
@@ -311,7 +316,6 @@ function userListHandle(users) {
             `
         }
         if (isOnline) {
-            console.log($(`#user-number-${index + 1}`))
             $(`#user-number-${index+ 1}`).classList.add("online-icon--online")
         }
 
@@ -330,10 +334,16 @@ checkEnvi.onclick = function (e) {
 
 // Listen to required envi result
 socket.on("enviResult", data => {
+    
     handleChartData(data)
 })
 
-
+socket.on("sameDate", data=>{
+    if(data.date == dateEnvi.value){
+        tempChart.destroy()
+        socket.emit("date", { date: getDate() })
+    }
+})
 
 //GET PREDICT DATA TABLE
 function showDetail(){
@@ -403,12 +413,14 @@ predictDelete.onclick = function(){
 }
 const enviDelete = $('.envi-delete__btn')
 enviDelete.onclick = function () {
+    
     let a = confirm('Are you sure to delele?')
     if(a){
         fetch(`/envis/date/delete/${dateEnvi.value}`)
             .then(response => response.json())
             .then(data => {
                 socket.emit("date", { date: dateEnvi.value })
+                tempChart.destroy()
                 alert('Delete successfully')
             })
             .catch(error => alert(error))
@@ -441,13 +453,13 @@ stopCmd.onclick = () => {
 // Camera and pump position update
 let currentCamPos = 0
 let currentPumpPos = 0
-socket.on("camPos1", data => {
+socket.on("camPos2", data => {
     if (data.sid !== socket.id) {
         camSlider.value = data.pos
         currentCamPos = camSlider.value
     }
 })
-socket.on("pumpPos1", data => {
+socket.on("pumpPos2", data => {
     if (data.sid !== socket.id) {
         pumpSlider.value = data.pos
         currentPumpPos = pumpSlider.value
@@ -466,6 +478,7 @@ camSlider.onchange = function () {
         pulse = currentCamPos - nowCamPos
     }
     currentCamPos = nowCamPos
+
     socket.emit('camPos', { direct: direct, pulse: pulse, pos: currentCamPos })
 }
 pumpSlider.onchange = function () {
@@ -569,6 +582,23 @@ async function fetchImage(data){
     })
     return response.json()
 }
+// Height input
+const heightInput = $('.height__input')
+const submitHeightBtn = $('.height-submit')
+submitHeightBtn.onclick = function () {
+    if (isNaN(heightInput.value) || heightInput.value.length == 0 || heightInput.value > 60) {
+
+        alert("Invalid height input. Try again!")
+        heightInput.value = ''
+    }
+    else {
+        socket.emit("height", heightInput.value)
+    }
+}
+socket.on("height2", height => {
+    heightInput.value = height
+})
+
 //Sub function
 function handleChartData(data) {
     let tempData = new Array()

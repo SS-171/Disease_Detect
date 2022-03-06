@@ -31,3 +31,5 @@ def start_application():
     return app
 
 app = start_application()
+
+#uvicorn --host 0.0.0.0 prediction.app.main:app --reload
