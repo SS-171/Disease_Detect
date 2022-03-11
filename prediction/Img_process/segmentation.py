@@ -8,7 +8,7 @@ from ..database.config.db import PlantCollection
 from ..database.APIDrive.drive import saveToDrive
 from PIL import Image
 import random
-MODEL_DIR = "prediction/Img_process/resource/model2.h5"
+MODEL_DIR = "prediction/Img_process/resource/model5.h5"
 from .source import get_mask_contours, load_inference_model
 from .classify import  preprocess,extract_features, predict
 num_classes = 1

@@ -150,6 +150,10 @@
     font-size: 1.5rem;
     margin-top: 1rem;
     font-style: italic;
+    
+}
+.predict-result__text.none-image{
+    margin-left: 10rem;
 }
 .img__show{
     position: relative;
@@ -275,7 +279,7 @@
     font-style: italic;
     font-weight: 600;
     letter-spacing: 1.6px;
-    margin-left: 115px;
+    margin-left: 124px;
 }
 .main-control{
     position: relative;
@@ -295,25 +299,31 @@
     font-weight: 600;
 
 }
+.main-control{
+    display: flex;
+    flex: 1;
+}
 /* implement */
-.main-left-control{
-    display: block;
-    position: relative;
+.plant__text{
+    margin-bottom: 60px;
+    margin-left:-68px;
 }
 .plant-height{
     position: absolute;
     display: flex;
-    padding: 2rem;
+    padding: 2.5rem;
 }
 .plant-height option:hover{
     cursor: pointer;
     background-color:#06dcf1;
 }
 .height__input{
+    display: block;
     border: 1px solid rgb(195, 195, 207);
-    border-radius: 3px;
+    border-radius: 5px;
     font-size: 1.4rem;
     text-indent: 6px;
+    padding: .5rem;
 }
 .height__input:focus{
     outline: none !important;
@@ -338,3 +348,114 @@
     cursor: pointer;
 }
 
+
+/* switch mode */
+.auto-mode{
+    width: 280px;
+    align-items:center;
+    justify-content: center;
+}
+.manual-mode{
+    animation: fadeIn .5s linear;
+}
+.manual-mode, .auto-mode{
+    display: none;
+}
+.mode--show{
+    display: flex;
+}
+/* for switch button */
+.mode-switch{
+    margin-top: 10px;
+}
+.switch-label{
+    position: relative;
+    display: block;
+    width: 65px;
+    height: 25px;
+    margin-left: 50px;
+
+}
+.switch-label .checkbox{
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.switch-label .switch-slider{
+    border: 1px solid #ccc;
+    position: absolute;
+    background: rgb(188, 206, 204);
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    border-radius: 10px;
+}
+.switch-label .switch-slider:before{
+    position: absolute;
+    content: "";
+    background-color:#09d870;
+    width: 40%;
+    height: 100%;
+    border-radius: 50%;
+    left: 2%;
+    transition: .5s all ease;
+
+}   
+.switch-label .checkbox:checked + .switch-slider:before{
+    left: 58%;
+}
+.switch-label .checkbox:checked ~ .switch-slider{
+    background-color: #c4e0fa;
+    
+}
+.switch__text{
+    z-index: 2;
+    color: #080807;
+    font-size: 1.4rem;
+    position: absolute;
+    font-weight: bolder;
+    top: 5%;
+}
+.switch__text.auto{
+    left: -55%;
+}
+.switch__text.manual{
+    left: 120%;
+}
+
+.arm-sliders{
+    display: block;
+    position: relative;
+}
+.manual-btns{
+    display: block;
+    position: absolute;
+    bottom : 66%;
+    left: 10%;
+}
+.manual__btn{
+    outline: none;
+    border: none;
+    padding: 5px;
+    font-size: 1.2rem;
+    color: #fff;
+    background-color:rgb(136, 155, 29);
+    border-radius: 6px;
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+}
+
+.manual__btn.run-pump{
+    background-color:rgb(68, 160, 152);
+
+}
+.manual__btn:hover{
+    cursor: pointer;
+    filter: brightness(1.1);
+}
+
+/* Manual predicting status */

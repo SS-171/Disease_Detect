@@ -106,8 +106,19 @@
                     <div class="control-container">
                         <p class="dashboard__heading">Control dashboard</p>
 
+                        <div class="mode-switch">
+                            <label for="checkbox" class="switch-label">
+                                <p class="switch__text auto">Auto</p>
+                                <p class="switch__text manual">Manual</p>
+                                <input type="checkbox" id="checkbox" class="checkbox">
+                                <span class="switch-slider"></span>
+                            </label>
+                        </div>
                         <div class="main-control">
-                            <div class="main-left-control">
+                         
+                           
+                            <div class="auto-mode mode--show">
+                                <span class="plant__text">Type your plant height here:</span>
                                 <div class="plant-height">
                                     <input type="text" list="heights" class="height__input">
                                     <datalist id="heights">
@@ -117,17 +128,28 @@
                                     </datalist>
                                     <input type="submit" value="Submit" class="submit__btn height-submit">
                                 </div>
-                                <div class="slider-control">
-                                    <div class="cam-servo servo">
-                                        <input type="range" class="cam-slider slider" value="0" min="0" max="2500">
-                                        <p class="slider-text">Camera</p>
+                            </div>
+                            <div class="manual-mode">
+                                <div class="arm-sliders">
+                                    <div class="slider-control">
+                                        <div class="cam-servo servo">
+                                            <input type="range" class="cam-slider slider" value="0" min="0" max="2500">
+                                            <p class="slider-text">Camera</p>
+                                        </div>
+                                        <div class="pump-servo servo">
+                                            <input type="range" class="pump-slider slider" min="0" max="2500" value="0">
+                                            <p class="slider-text">Pump</p>
+                                        </div>
                                     </div>
-                                    <div class="pump-servo servo">
-                                        <input type="range" class="pump-slider slider" value="0" min="0" max="2500">
-                                        <p class="slider-text">Pump</p>
+                                    <div class="manual-btns">
+                                        <input type="submit" value="Capture and predict" class="manual__btn ras-predict">
+                                        <input type="submit" value="Run pump" class="manual__btn run-pump">
                                     </div>
                                 </div>
                             </div>
+                            
+                                
+                           
                             <div class="direct-btn">
                                 <div class="btn btn__up">
                                     <i class="bx bxs-up-arrow"></i>

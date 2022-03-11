@@ -7,7 +7,7 @@ from datetime import datetime
 from PIL import Image
 import random
 import matplotlib.pyplot as plt
-MODEL_DIR = "prediction/Img_process/resource/model2.h5"
+MODEL_DIR = "prediction/Img_process/resource/model5.h5"
 from prediction.Img_process.source import get_mask_contours, load_inference_model
 from prediction.Img_process.classify import  preprocess,extract_features, predict
 num_classes = 1
@@ -28,24 +28,7 @@ def getContoursArea(contours):
         c_area = cv.contourArea(cnt)
         cnt_area = sorted(np.append(cnt_area, c_area ), reverse=True)
         return np.mean(cnt_area)
-def furtherSegment(img):
 
-    image = cv.imread(img)
-    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
-    blur = cv.GaussianBlur(gray, (5,5), 0)
-    
-    # _, digital = cv.threshold(gray, 75, 255, cv.THRESH_BINARY_INV)
-    edged = cv.Canny(blur, 150, 200)
-    # contours, hierarchy = cv.findContours(edged, cv.RETR_TREE, cv.CHAIN_APPROX_NONE)
-    # cv.drawContours(image, contours, -1, (0, 255, 0), 1)
-    # cv.imshow("segment1", digital)
-    
-    # contours, hierarchy = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
-    # cv.drawContours(image, contours, -1, (0, 0, 255), 1)
-    cv.imshow("img", edged)
-    cv.waitKey(0)
-
-# furtherSegment("prediction\static\img\\bacterialSpot\\2.JPG")
 
 def predict_segment(url):
     # image  = preprocess(image)
@@ -75,30 +58,28 @@ def predict_segment(url):
                 # draw contour
                 img_mask = cv.drawContours(blank.copy(), [cnt],0, (255,255,255), -1)
                 new_img =cv.bitwise_and(image, img_mask)
-                crop_img = center_crop(new_img, dim_object)
+                crop_img = cv.resize(center_crop(new_img, dim_object),(150,150))
                 cv_img = cv.cvtColor(crop_img, cv.COLOR_BGR2RGB)
-            
-                seg_img = preprocess(crop_img)
-        
-                features = extract_features(seg_img)
-          
-                pred_result = predict(features)
-
-                img_name = random.randint(0,150)
+                # seg_img = preprocess(crop_img)
+                # features = extract_features(seg_img)
+                # pred_result = predict(features)
+                img_name = random.randint(0,400)
                 img_path = f'prediction\Img_process\\resource\seg_img\img_{img_name}.jpg'
+                # cv.imshow("image", cv_img)
+                # cv.waitKey(0)
                 cv.imwrite(img_path, cv_img)
-                os.remove(img_path)
+                # os.remove(img_path)
                
-                response = {
+    #             response = {
                 
-                    "status" : pred_result
-                }
-                result[f"l{contour_count}"] = response
+    #                 "status" : pred_result
+    #             }
+    #             result[f"l{contour_count}"] = response
 
-    if(not contour_count): return 'Not found any leaf in the image case1'
-    else: 
-        return result
+    # if(not contour_count): return 'Not found any leaf in the image case1'
+    # else: 
+    #     return result
         
    
-
-print(predict_segment("prediction\static\img\\real_img\\4.jpg"))
+for i in range(43,56):
+    predict_segment(f"prediction\static\img\\real_img\\ras_img\\{i}.jpg")

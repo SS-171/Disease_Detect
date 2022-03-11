@@ -527,8 +527,10 @@ const form = $('.dashboard__predict')
 const inputImg = $('.input__img')
 const submitBtn = $(".predict-img__btn")
 const predictResult = $(".img__show")
-let htmlResult ="";
+
+
 submitBtn.onclick = function (e) {
+    let htmlResult = "";
     console.log("submit")
     if(inputImg.value){
         htmlResult =""
@@ -540,28 +542,8 @@ submitBtn.onclick = function (e) {
         data.append('file', inputImg.files[0])
         fetchImage(data)
             .then(result => {
-                if (typeof(result) === "string") {
-                    console.log(result)
-                    htmlResult = `
-                         <p class="predict-result__text">Not found any leaf in image</p>
-                        `
-                }
-                else {
-                    Object.keys(result).forEach(each => {
-                        console.log(each)
-                        console.log("status", result[each].status)
-                        console.log("url-img", result[each].url)
-                        let html= `
-                            <div class="predict__result">
-                                <img src="${result[each].url}" alt="" class="predict__img">
-                                <p class="predict-result__text">${result[each].status}</p>
-                            </div>
-                        `
-                        htmlResult = htmlResult.concat(html)
-    
-                    })
-                    
-                }
+                console.log(result)
+                htmlResult = renderPredictResult(result)
             })
             .then(result=>{
                 predictResult.innerHTML = htmlResult
@@ -598,8 +580,76 @@ submitHeightBtn.onclick = function () {
 socket.on("height2", height => {
     heightInput.value = height
 })
+// Auto and manual mode
+const modeSwitch = $('.mode-switch .checkbox');
+const autoMode = $('.auto-mode')
+const manualMode = $('.manual-mode')
+const rasPredict = $(".ras-predict")
+const runPump = $('.run-pump')
+modeSwitch.onclick = ()=>{
 
+    socket.emit("control", "stop")
+    socket.emit("reset", 1)
+    if(modeSwitch.checked){
+        manualMode.classList.add("mode--show");
+        autoMode.classList.remove("mode--show")
+    }
+    else {
+        autoMode.classList.add("mode--show");
+        manualMode.classList.remove("mode--show")
+        socket.emit("height", heightInput.value)
+    }
+}
+// manual predict
+rasPredict.onclick = function(){
+    socket.emit("rasPredict", 1)
+    predictResult.innerHTML = `
+        <p class="predicting__status"> Predicting...</p>
+        `
+}
+runPump.onclick = ()=>{
+    socket.emit("runPump", 1)
+}
+socket.on("rasPredictResult", data=>{
+    console.log("rasPredict clicked")
+    console.log("rasPredict", data)
+    predictResult.innerHTML = ``
+    console.log(data)
+    let htmlResult = renderPredictResult(data)
+    predictResult.innerHTML = htmlResult
+
+})
+// Raspberry connect alert
+socket.on("rasConnect", data=>{
+    if(data){
+        alert("Raspberry connected!")
+    }
+})
 //Sub function
+function renderPredictResult(result) {
+    let htmlResult = "";
+    if (typeof (result) === "string") {
+        console.log(result)
+        htmlResult = `
+                         <p class="predict-result__text none-image">Not found any leaf in image</p>
+                        `
+    }
+    else {
+        Object.keys(result).forEach(each => {
+
+            let html = `
+                            <div class="predict__result">
+                                <img src="${result[each].url}" alt="" class="predict__img">
+                                <p class="predict-result__text">${result[each].status}</p>
+                            </div>
+                        `
+            htmlResult = htmlResult.concat(html)
+
+        })
+
+    }
+    return htmlResult;
+}
 function handleChartData(data) {
     let tempData = new Array()
     let humidData = new Array()

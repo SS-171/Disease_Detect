@@ -118,7 +118,27 @@ def websocket(sio, socket_app, app):
         global height
         height = data
         await sio.emit("height1", data)
-
+    @sio.on("rasPredict")
+    async def rasPredict(sid, data):
+        await sio.emit("rasPredict", data)
+    @sio.on("rasPredictResult")
+    async def rasPredict(sid, data):
+        await sio.emit("rasPredictResult", data)
+    @sio.on("runPump")
+    async def runPump(sid, data):
+        await sio.emit("runPump", data)
+    @sio.on("reset")
+    async def reset(sid, data):
+        global camPos, pumpPos
+        camPos = 0
+        pumpPos = 0
+        await sio.emit("camPos2",  {"pos": camPos, "sid": 0})
+        await sio.emit("pumpPos2", {"pos": pumpPos, "sid": 0})
+        await sio.emit("reset", 1)
+    @sio.on("rasConnect")
+    async def rasConnect(sid, data):
+        if(data):
+            await sio.emit("rasConnect",1)
     @sio.on("disconnect")
     async def disconnect(sid):
         removeOnlineUser(sid)

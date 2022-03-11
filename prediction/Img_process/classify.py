@@ -9,7 +9,7 @@ import keras
 input_shape = (150, 150)
 base_model = keras.models.load_model("prediction/Img_process/resource/base_model.h5")
 xgmodel = xgb.Booster()
-xgmodel.load_model('prediction//Img_process//resource//xgb_model2.bin')
+xgmodel.load_model('prediction//Img_process//resource//xgb_model(5).bin')
 labels = ['Bacterial_spot', 'Early_blight', 'Late_blight',
            'Yellow_Leaf_Curl_Virus', 'healthy']
 

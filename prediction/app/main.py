@@ -7,7 +7,7 @@ import socketio
 from .authenticate import authenticate
 from typing import Any
 from .websocket import websocket
-sio: Any = socketio.AsyncServer(async_mode = "asgi")
+sio: Any = socketio.AsyncServer(async_mode = "asgi", ping_timeout=60)
 socket_app = socketio.ASGIApp(sio)
 
 
