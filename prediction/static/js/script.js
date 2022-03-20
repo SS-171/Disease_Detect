@@ -589,8 +589,9 @@ const runPump = $('.run-pump')
 modeSwitch.onclick = ()=>{
 
     socket.emit("control", "stop")
-    socket.emit("reset", 1)
+    
     if(modeSwitch.checked){
+        socket.emit("reset", 1)
         manualMode.classList.add("mode--show");
         autoMode.classList.remove("mode--show")
     }
@@ -624,6 +625,12 @@ socket.on("rasConnect", data=>{
     if(data){
         alert("Raspberry connected!")
     }
+})
+// water level
+let waterLevel = $('.tank-level');
+socket.on("waterLevel", data=>{ 
+    console.log("water",data/20*700)
+    waterLevel.value = data/20*700;
 })
 //Sub function
 function renderPredictResult(result) {

@@ -66,7 +66,6 @@ def predict_segment(url):
                 img_name = random.randint(0,400)
                 img_path = f'prediction\Img_process\\resource\seg_img\img_{img_name}.jpg'
                 # cv.imshow("image", cv_img)
-                # cv.waitKey(0)
                 cv.imwrite(img_path, cv_img)
                 # os.remove(img_path)
                
@@ -81,5 +80,5 @@ def predict_segment(url):
     #     return result
         
    
-for i in range(43,56):
-    predict_segment(f"prediction\static\img\\real_img\\ras_img\\{i}.jpg")
+# for i in range(43,56):
+predict_segment(f"prediction\static\img\\real_img\\ras_img\\38.jpg")

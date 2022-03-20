@@ -57,9 +57,12 @@ def predict_segment(url):
                 dim_object = [min, max]
                 # draw contour
                 img_mask = cv.drawContours(blank.copy(), [cnt],0, (255,255,255), -1)
+                cv.imshow("mask",img_mask)
                 new_img =cv.bitwise_and(image, img_mask)
+                cv.imshow("after mask",new_img)
                 crop_img = cv.resize(center_crop(new_img, dim_object),(150,150))
                 cv_img = cv.cvtColor(crop_img, cv.COLOR_BGR2RGB)
+                cv.imshow("after crop",cv_img)
                 # seg_img = preprocess(crop_img)
                 # features = extract_features(seg_img)
                 # pred_result = predict(features)
@@ -81,5 +84,5 @@ def predict_segment(url):
     #     return result
         
    
-for i in range(43,56):
-    predict_segment(f"prediction\static\img\\real_img\\ras_img\\{i}.jpg")
+# for i in range(43,56):
+predict_segment(f"prediction\static\img\\real_img\\bacterialSpot\\1.JPG")

@@ -42,6 +42,7 @@ def websocket(sio, socket_app, app):
     async def getEnvi(temp: int, humid: int):
         saveEnvi(temp, humid)
         await sio.emit('sameDate', {"date": datetime.now().strftime("%Y-%m-%d")})
+        await sio.emit("envi", {"temp": temp, "humid": humid})
         return {"msg":"post created"}
 
     def saveEnvi(temp, humid):
@@ -139,6 +140,9 @@ def websocket(sio, socket_app, app):
     async def rasConnect(sid, data):
         if(data):
             await sio.emit("rasConnect",1)
+    @sio.on("waterLevel")
+    async def waterLevel(sid, data):
+        await sio.emit("waterLevel", data)
     @sio.on("disconnect")
     async def disconnect(sid):
         removeOnlineUser(sid)
