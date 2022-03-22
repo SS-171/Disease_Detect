@@ -1,6 +1,7 @@
 from prediction.database.config.db import UserCollection, LogCollection,EnviCollection, PlantCollection
 from datetime import datetime
-
+from fastapi import Request, Body
+import json
 onlineUsers = []
 camPos = 0
 pumpPos = 0 
@@ -38,12 +39,24 @@ def removeOnlineUser(sid):
 def getUsers():
     return (list(UserCollection.find({}, {"_id":0})))
 def websocket(sio, socket_app, app):
+    # update envi param
     @app.get("/update/envi/")
     async def getEnvi(temp: int, humid: int):
         saveEnvi(temp, humid)
         await sio.emit('sameDate', {"date": datetime.now().strftime("%Y-%m-%d")})
         await sio.emit("envi", {"temp": temp, "humid": humid})
         return {"msg":"post created"}
+    # auto predicting status show
+    @app.get("/predicting/status")
+    async def showStatus(auto : int):
+        await sio.emit("predictStatus", auto)
+        await sio.emit("autoRasPredict", 1)
+        return {"msg" : "success"}
+
+    # updating water level
+    @app.get("/waterLevel/update")
+    async def waterUpdate(value: int):
+        await sio.emit("waterLevel", value)
 
     def saveEnvi(temp, humid):
         now = getEnviTime().split(" ")
@@ -86,8 +99,6 @@ def websocket(sio, socket_app, app):
     async def control(sid, msg):
         await sio.emit("control", msg)
 
-    # Filter data by date
-
 
     @sio.on("date")
     async def getdate(sid, data):
@@ -119,9 +130,9 @@ def websocket(sio, socket_app, app):
         global height
         height = data
         await sio.emit("height1", data)
-    @sio.on("rasPredict")
+    @sio.on("manualRasPredict")
     async def rasPredict(sid, data):
-        await sio.emit("rasPredict", data)
+        await sio.emit("manualRasPredict", data)
     @sio.on("rasPredictResult")
     async def rasPredict(sid, data):
         await sio.emit("rasPredictResult", data)
@@ -147,3 +158,6 @@ def websocket(sio, socket_app, app):
     async def disconnect(sid):
         removeOnlineUser(sid)
         print("on disconnect")
+    @sio.on("predictStatus")
+    async def predictStatus(sid, data):
+        await sio.emit("predictStatus", data)

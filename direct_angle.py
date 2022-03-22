@@ -1,7 +1,12 @@
 from datetime import datetime
-from multiprocessing import Process, Queue, Value
+import multiprocessing
+from multiprocessing import Process, Queue, Value, Manager
+from multiprocessing.managers import BaseManager
+from tracemalloc import start
 from unittest import result
 from socketio import Client
+import json
+import requests
 import RPi.GPIO as GPIO
 import os
 import signal
@@ -50,7 +55,8 @@ servo = Servo(12, min_pulse_width=0.5/1000, max_pulse_width=2.5/1000, pin_factor
 print("Caculating offset, do not move MPU6050")
 sleep(1)
 cl = Client()
-cl.connect("http://192.168.137.1:8000/")
+hostUrl = "http://192.168.137.1:8000/"
+cl.connect(hostUrl)
 def pulse_generator():
 	while True:
 		GPIO.output(STEP, GPIO.HIGH)
@@ -74,6 +80,7 @@ def run_pump(seconds):
 
 # start functions
 def start_forward():
+	stop_forward_cmd()
 	servo.mid()
 	global forward, pid
 	forward = Process(target = run_forward)
@@ -124,36 +131,32 @@ def armSlide(dirPin, stepPin,direction, pulses):
         sleep(delay)
         GPIO.output(stepPin, GPIO.LOW)
         sleep(delay)
-
-def checkDirection(pid, count, height, autoCamPos):
+def autoPredict():
+	requests.get(hostUrl + "predicting/status?auto=1")
+def waterLevelUpdate(value):
+	requests.get(hostUrl + f"waterLevel/update?value={value}")
+def checkDirection(pid, diseaseCount):
 	while True:
-	
-		if(camHC.get_distance() < 20):
-			print("recv pid", camHC.get_distance())
+		if(camHC.get_distance() < 25):
 			if(pid.value > 0):
-				autoCamPos.value = 0
+				print("cam detect")
 				stop_forward_cmd()
-				print("Cam Detect Obstacle")
-				armSlide(DIR_CAM, STEP_CAM, count.value%2, round(height.value/2))
-				autoCamPos.value = round(height.value/2)
-				# capture_and_predict()
-				sleep(2)
-				armSlide(DIR_CAM, STEP_CAM, count.value%2, round(height.value/2))
-				autoCamPos.value = round(height.value)
-				# capture_and_predict()
-				count.value += 1
-				if(count.value == 100):
-					count.value = 0
-				start_forward()
-		if(pumpHC.get_distance() < 20):
-			print("recv pid", pid.value)
+				autoPredict()
+		if(pumpHC.get_distance() < 25):
 			if(pid.value > 0):
-				stop_forward_cmd()
 				print("Pump Detect Obstacle")
-				if(count.value >= 1):
-					run_pump(count.value + 1)
-					cl.emit("waterLevel",18 - waterHC.get_distance(), namespace="/")
+				stop_forward_cmd()
+				if(diseaseCount.value >0):
+					run_pump(diseaseCount.value + 1)
+					diseaseCount.value = 0
+					waterLevelUpdate(18 -waterHC.get_distance())
 				start_forward()
+				
+				# if(diseaseCount.value >= 1):
+				# 	run_pump(diseaseCount.value + 1)
+				# 	diseaseCount.value = 0
+				# 	cl.emit("waterLevel",18 - waterHC.get_distance(), namespace="/")
+				# 	start_forward()
 		# turn left
 		if(topHC.get_distance() < 20):
 			print("Front obs detect")
@@ -163,19 +166,20 @@ def checkDirection(pid, count, height, autoCamPos):
 				servo.value = 0
 			
 			
-		sleep(0.5)
+		sleep(0.8)
 
 if __name__ == "__main__":
+
 	servo.value = 0
 	pid = Value("i", 0)
 	count = Value("i", 0)
+	diseaseCount = Value("i", 0)
 	pulseHeight = Value("i", 0) 
 	autoCamPos = Value("i", 0)
 	forward = Process(target = run_forward)
 	backward = Process(target = run_backward)
 	stop = Process(target = stop_forwarding, args = (pid, ))
-	sensor = Process(target =checkDirection, args= (pid, count, pulseHeight, autoCamPos) )
-
+	sensor = Process(target =checkDirection, args= (pid, diseaseCount) )
 	sensor.start()
 	@cl.on("control")
 	def control(data):
@@ -208,7 +212,7 @@ if __name__ == "__main__":
 	def heightInput(data):
 		print(data, type(data))
 		direct = 0
-		global pulseHeight
+		global pulseHeight, autoCamPos
 		data = int(data) - 10
 		if(data < 0): 
 			data = 0
@@ -219,14 +223,65 @@ if __name__ == "__main__":
 		else: direct = 1	
 		pulseHeight.value = round((data/60)*2500)
 		armSlide(DIR_PUMP, STEP_PUMP, direct, abs(pulse))
-	@cl.on("rasPredict")
+		armSlide(DIR_CAM, STEP_CAM, 1, autoCamPos.value)
+		autoCamPos.value = 0
+
+
+	
+	@cl.on("manualRasPredict")
 	def rasPredict(data):
 		print("Ras predicting")
 		result = capture_and_predict()
 		cl.emit("rasPredictResult", result["response"])
 		if(result["count"] >0):
 			run_pump(result["count"] + 1)
+	
+	@cl.on("autoRasPredict")
+	def rasPredict(data):
+		global count, pulseHeight, diseaseCount, autoCamPos
+		print("Ras predicting")
+		autoCamPos.value = 0
+		# first
+		if(count.value ==0):
+			armSlide(DIR_CAM, STEP_CAM, count.value%2, round(pulseHeight.value/2))
+			autoCamPos.value = round(pulseHeight.value/2)
+			result = capture_and_predict()
+			with diseaseCount.get_lock():
+				diseaseCount.value += result["count"]
+			cl.emit("rasPredictResult", result["response"])
+			sleep(2)
+		elif(count.value%2 == 0):
+			result = capture_and_predict()
+			cl.emit("rasPredictResult", result["response"])
+			sleep(2)
+			armSlide(DIR_CAM, STEP_CAM, count.value%2, round(pulseHeight.value/2))
+			autoCamPos.value = round(pulseHeight.value/2)
+			with diseaseCount.get_lock():
+				diseaseCount.value += result["count"]
+	
 		
+		# second
+		if(count.value ==0):
+			armSlide(DIR_CAM, STEP_CAM, count.value%2, round(pulseHeight.value))
+			cl.emit("predictStatus", 1)
+			autoCamPos.value = round(pulseHeight.value)
+			result = capture_and_predict()
+			cl.emit("rasPredictResult", result["response"])
+			with diseaseCount.get_lock():
+				diseaseCount.value += result["count"]
+		elif(count.value %2 ==1): 
+			cl.emit("predictStatus", 1)
+			result = capture_and_predict()
+			cl.emit("rasPredictResult", result["response"])
+			armSlide(DIR_CAM, STEP_CAM, count.value%2, round(pulseHeight.value/2))
+			autoCamPos.value = round(pulseHeight.value)
+			with diseaseCount.get_lock():
+				diseaseCount.value += result["count"]
+
+		with count.get_lock():
+			count.value += 1
+		start_forward()
+			
 	@cl.on("runPump")
 	def manualPump(data):
 		run_pump(3)
@@ -239,7 +294,6 @@ if __name__ == "__main__":
 			armSlide(DIR_PUMP, STEP_PUMP, 1, abs(pulseHeight.value))
 			pulseHeight.value = 0	
 			autoCamPos.value = 0	
-	
 	cl.emit("rasConnect",1, namespace="/")
 	cl.emit("waterLevel",18 - waterHC.get_distance(), namespace="/")
 	sensor.join()

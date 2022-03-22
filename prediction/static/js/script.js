@@ -435,18 +435,23 @@ const backward = $(".btn.btn__down")
 const stopCmd = $(".btn.btn__stop")
 
 turnLeft.onclick = () => {
+    predictResult.innerHTML = ``
     socket.emit("control", "left")
 }
 turnRight.onclick = () => {
+    predictResult.innerHTML = ``
     socket.emit("control", "right")
 }
 forward.onclick = () => {
+    predictResult.innerHTML = ``
     socket.emit("control", "forward")
 }
 backward.onclick = () => {
+    predictResult.innerHTML = ``
     socket.emit("control", "backward")
 }
 stopCmd.onclick = () => {
+    predictResult.innerHTML = ``
     socket.emit("control", "stop")
 }
 
@@ -603,7 +608,7 @@ modeSwitch.onclick = ()=>{
 }
 // manual predict
 rasPredict.onclick = function(){
-    socket.emit("rasPredict", 1)
+    socket.emit("manualRasPredict", 1)
     predictResult.innerHTML = `
         <p class="predicting__status"> Predicting...</p>
         `
@@ -611,8 +616,12 @@ rasPredict.onclick = function(){
 runPump.onclick = ()=>{
     socket.emit("runPump", 1)
 }
+socket.on("predictStatus", data=>{ 
+    predictResult.innerHTML = `
+        <p class="predicting__status"> Predicting...</p>
+        `
+})
 socket.on("rasPredictResult", data=>{
-    console.log("rasPredict clicked")
     console.log("rasPredict", data)
     predictResult.innerHTML = ``
     console.log(data)
