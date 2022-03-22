@@ -235,7 +235,7 @@ if __name__ == "__main__":
 		cl.emit("rasPredictResult", result["response"])
 		if(result["count"] >0):
 			run_pump(result["count"] + 1)
-	
+
 	@cl.on("autoRasPredict")
 	def rasPredict(data):
 		global count, pulseHeight, diseaseCount, autoCamPos
@@ -258,8 +258,16 @@ if __name__ == "__main__":
 			autoCamPos.value = round(pulseHeight.value/2)
 			with diseaseCount.get_lock():
 				diseaseCount.value += result["count"]
-	
-		
+
+		if(count.value != 0):
+			result = capture_and_predict()
+			cl.emit("rasPredictResult", result["response"])
+			sleep(2)
+			with diseaseCount.get_lock():
+				diseaseCount.value += result["count"]
+			if(count.value%2 ==0):
+				autoCamPos.value = round(pulseHeight.value/2)
+			else: autoCamPos.value = round(pulseHeight.value)
 		# second
 		if(count.value ==0):
 			armSlide(DIR_CAM, STEP_CAM, count.value%2, round(pulseHeight.value))
@@ -270,10 +278,10 @@ if __name__ == "__main__":
 			with diseaseCount.get_lock():
 				diseaseCount.value += result["count"]
 		elif(count.value %2 ==1): 
+			armSlide(DIR_CAM, STEP_CAM, count.value%2, round(pulseHeight.value/2))
 			cl.emit("predictStatus", 1)
 			result = capture_and_predict()
 			cl.emit("rasPredictResult", result["response"])
-			armSlide(DIR_CAM, STEP_CAM, count.value%2, round(pulseHeight.value/2))
 			autoCamPos.value = round(pulseHeight.value)
 			with diseaseCount.get_lock():
 				diseaseCount.value += result["count"]
